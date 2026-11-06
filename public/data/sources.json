@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [
+    {
+      "id": "ctgov-nct00968708",
+      "author": "Takeda; ClinicalTrials.gov, U.S. National Library of Medicine",
+      "title": "Cardiovascular Outcomes Study of Alogliptin in Patients With Type 2 Diabetes and Acute Coronary Syndrome (NCT00968708)",
+      "publicationDate": "2009-08-31",
+      "url": "https://clinicaltrials.gov/study/NCT00968708",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "Original registry title, summary, conditions and interventions.",
+        "Completed interventional status, posted results, completion date and enrollment.",
+        "Evidence of at least one listed United States location."
+      ]
+    },
+    {
+      "id": "ctgov-nct01131676",
+      "author": "Boehringer Ingelheim; ClinicalTrials.gov, U.S. National Library of Medicine",
+      "title": "BI 10773 (Empagliflozin) Cardiovascular Outcome Event Trial in Type 2 Diabetes Mellitus Patients (EMPA-REG OUTCOME). (NCT01131676)",
+      "publicationDate": "2010-05-27",
+      "url": "https://clinicaltrials.gov/study/NCT01131676",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "Original registry title, summary, conditions and interventions.",
+        "Completed interventional status, posted results, completion date and enrollment.",
+        "Evidence of at least one listed United States location."
+      ]
+    },
+    {
+      "id": "ctgov-nct01144338",
+      "author": "AstraZeneca; ClinicalTrials.gov, U.S. National Library of Medicine",
+      "title": "Exenatide Study of Cardiovascular Event Lowering Trial (EXSCEL): A Trial To Evaluate Cardiovascular Outcomes After Treatment With Exenatide Once Weekly In Patients With Type 2 Diabetes Mellitus (NCT01144338)",
+      "publicationDate": "2010-06-15",
+      "url": "https://clinicaltrials.gov/study/NCT01144338",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "Original registry title, summary, conditions and interventions.",
+        "Completed interventional status, posted results, completion date and enrollment.",
+        "Evidence of at least one listed United States location."
+      ]
+    },
+    {
+      "id": "ctgov-nct01179048",
+      "author": "Novo Nordisk A/S; ClinicalTrials.gov, U.S. National Library of Medicine",
+      "title": "Liraglutide Effect and Action in Diabetes: Evaluation of Cardiovascular Outcome Results (NCT01179048)",
+      "publicationDate": "2010-08-10",
+      "url": "https://clinicaltrials.gov/study/NCT01179048",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "Original registry title, summary, conditions and interventions.",
+        "Completed interventional status, posted results, completion date and enrollment.",
+        "Evidence of at least one listed United States location."
+      ]
+    },
+    {
+      "id": "ctgov-nct01394952",
+      "author": "Eli Lilly and Company; ClinicalTrials.gov, U.S. National Library of Medicine",
+      "title": "Researching Cardiovascular Events With a Weekly Incretin in Diabetes (REWIND) (NCT01394952)",
+      "publicationDate": "2011-07-15",
+      "url": "https://clinicaltrials.gov/study/NCT01394952",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "Original registry title, summary, conditions and interventions.",
+        "Completed interventional status, posted results, completion date and enrollment.",
+        "Evidence of at least one listed United States location."
+      ]
+    },
+    {
+      "id": "ctgov-nct01730534",
+      "author": "AstraZeneca; ClinicalTrials.gov, U.S. National Library of Medicine",
+      "title": "Multicenter Trial to Evaluate the Effect of Dapagliflozin on the Incidence of Cardiovascular Events (NCT01730534)",
+      "publicationDate": "2012-11-21",
+      "url": "https://clinicaltrials.gov/study/NCT01730534",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "Original registry title, summary, conditions and interventions.",
+        "Completed interventional status, posted results, completion date and enrollment.",
+        "Evidence of at least one listed United States location."
+      ]
+    },
+    {
+      "id": "ctgov-nct02065791",
+      "author": "Janssen Research & Development, LLC; ClinicalTrials.gov, U.S. National Library of Medicine",
+      "title": "Evaluation of the Effects of Canagliflozin on Renal and Cardiovascular Outcomes in Participants With Diabetic Nephropathy (NCT02065791)",
+      "publicationDate": "2014-02-19",
+      "url": "https://clinicaltrials.gov/study/NCT02065791",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "Original registry title, summary, conditions and interventions.",
+        "Completed interventional status, posted results, completion date and enrollment.",
+        "Evidence of at least one listed United States location."
+      ]
+    },
+    {
+      "id": "aact-overview",
+      "author": "Clinical Trials Transformation Initiative",
+      "title": "AACT: The entire ClinicalTrials.gov registry, in one analyzable database",
+      "publicationDate": null,
+      "url": "https://aact.ctti-clinicaltrials.org/landing",
+      "accessedDate": "2026-11-06",
+      "supports": [
+        "AACT is a public relational database containing ClinicalTrials.gov protocol and results data.",
+        "AACT is the intended source for the later reproducible extraction stage; this prototype was checked directly against ClinicalTrials.gov."
+      ]
+    }
+  ]
+}
