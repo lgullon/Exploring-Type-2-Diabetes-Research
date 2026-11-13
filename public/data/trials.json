@@ -1,0 +1,464 @@
+{
+  "schemaVersion": "1.0",
+  "snapshotDate": "2026-11-06",
+  "limitedSample": true,
+  "cohort": {
+    "description": "Completed interventional type 2 diabetes trials with posted results and at least one listed U.S. study location.",
+    "inclusionRules": [
+      "Completed study.",
+      "Interventional design.",
+      "Type 2 diabetes described in the conditions or summary.",
+      "Results posted.",
+      "At least one listed U.S. study location."
+    ],
+    "selectionMethod": "Purposive convenience sample of seven recognizable cardiovascular or renal outcome trials in type 2 diabetes. Candidate NCT IDs were checked individually against original ClinicalTrials.gov API v2 records on 2026-11-06. No systematic registry search, random sampling or exhaustive AACT extraction was performed.",
+    "sourceIds": [
+      "ctgov-nct00968708",
+      "ctgov-nct01131676",
+      "ctgov-nct01144338",
+      "ctgov-nct01179048",
+      "ctgov-nct01394952",
+      "ctgov-nct01730534",
+      "ctgov-nct02065791",
+      "aact-overview"
+    ]
+  },
+  "studies": [
+    {
+      "nctId": "NCT00968708",
+      "title": "Cardiovascular Outcomes Study of Alogliptin in Patients With Type 2 Diabetes and Acute Coronary Syndrome",
+      "summary": "The purpose of this study is to evaluate the cardiovascular outcomes of alogliptin, once daily (QD), compared with placebo, in addition to standard of care, in patients with type 2 diabetes mellitus and acute coronary syndrome.",
+      "conditions": [
+        "Diabetes Mellitus, Type 2",
+        "Acute Coronary Syndrome"
+      ],
+      "interventions": [
+        "Alogliptin",
+        "Placebo"
+      ],
+      "status": "COMPLETED",
+      "studyType": "INTERVENTIONAL",
+      "hasResults": true,
+      "usLocation": {
+        "country": "United States",
+        "facility": null,
+        "city": "Birmingham",
+        "state": "Alabama",
+        "sourceIds": [
+          "ctgov-nct00968708"
+        ]
+      },
+      "completionDate": {
+        "value": "2013-06",
+        "precision": "month"
+      },
+      "enrollment": 5380,
+      "enrollmentType": "ACTUAL",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00968708",
+      "sourceIds": [
+        "ctgov-nct00968708"
+      ],
+      "demographics": {
+        "age": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "sex": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "gender": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "race": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "ethnicity": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        }
+      }
+    },
+    {
+      "nctId": "NCT01131676",
+      "title": "BI 10773 (Empagliflozin) Cardiovascular Outcome Event Trial in Type 2 Diabetes Mellitus Patients (EMPA-REG OUTCOME).",
+      "summary": "The aim of the present study is to investigate the safety of BI 10773 treatment in patients with Type 2 Diabetes Mellitus and high cardiovascular risk.",
+      "conditions": [
+        "Diabetes Mellitus, Type 2"
+      ],
+      "interventions": [
+        "BI 10773 low dose",
+        "Placebo BI 10773 high dose",
+        "BI 10773 high dose",
+        "Placebo BI 10773 low dose",
+        "Placebo BI 10773 low dose",
+        "Placebo BI 10773 high dose"
+      ],
+      "status": "COMPLETED",
+      "studyType": "INTERVENTIONAL",
+      "hasResults": true,
+      "usLocation": {
+        "country": "United States",
+        "facility": "1245.25.10043 Boehringer Ingelheim Investigational Site",
+        "city": "Birmingham",
+        "state": "Alabama",
+        "sourceIds": [
+          "ctgov-nct01131676"
+        ]
+      },
+      "completionDate": {
+        "value": "2015-04",
+        "precision": "month"
+      },
+      "enrollment": 7064,
+      "enrollmentType": "ACTUAL",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01131676",
+      "sourceIds": [
+        "ctgov-nct01131676"
+      ],
+      "demographics": {
+        "age": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "sex": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "gender": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "race": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "ethnicity": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        }
+      }
+    },
+    {
+      "nctId": "NCT01144338",
+      "title": "Exenatide Study of Cardiovascular Event Lowering Trial (EXSCEL): A Trial To Evaluate Cardiovascular Outcomes After Treatment With Exenatide Once Weekly In Patients With Type 2 Diabetes Mellitus",
+      "summary": "This study will compare the impact of including exenatide once weekly in addition to usual care vs. usual care without exenatide on major cardiovascular outcomes as measured by the primary composite endpoint of cardiovascular-related death, nonfatal myocardial infarction (MI), or nonfatal stroke.",
+      "conditions": [
+        "Type 2 Diabetes Mellitus"
+      ],
+      "interventions": [
+        "Exenatide Once Weekly",
+        "Placebo"
+      ],
+      "status": "COMPLETED",
+      "studyType": "INTERVENTIONAL",
+      "hasResults": true,
+      "usLocation": {
+        "country": "United States",
+        "facility": "Research Site",
+        "city": "Birmingham",
+        "state": "Alabama",
+        "sourceIds": [
+          "ctgov-nct01144338"
+        ]
+      },
+      "completionDate": {
+        "value": "2017-04-24",
+        "precision": "day"
+      },
+      "enrollment": 14752,
+      "enrollmentType": "ACTUAL",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01144338",
+      "sourceIds": [
+        "ctgov-nct01144338"
+      ],
+      "demographics": {
+        "age": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "sex": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "gender": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "race": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "ethnicity": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        }
+      }
+    },
+    {
+      "nctId": "NCT01179048",
+      "title": "Liraglutide Effect and Action in Diabetes: Evaluation of Cardiovascular Outcome Results",
+      "summary": "This trial is conducted in Africa, Asia, Europe, and North and South America. The aim of this trial is to determine the long term effect of liraglutide on cardiovascular events in subjects with type 2 diabetes.",
+      "conditions": [
+        "Diabetes",
+        "Diabetes Mellitus, Type 2"
+      ],
+      "interventions": [
+        "liraglutide",
+        "placebo"
+      ],
+      "status": "COMPLETED",
+      "studyType": "INTERVENTIONAL",
+      "hasResults": true,
+      "usLocation": {
+        "country": "United States",
+        "facility": "Novo Nordisk Investigational Site",
+        "city": "Alabaster",
+        "state": "Alabama",
+        "sourceIds": [
+          "ctgov-nct01179048"
+        ]
+      },
+      "completionDate": {
+        "value": "2015-12-17",
+        "precision": "day"
+      },
+      "enrollment": 9341,
+      "enrollmentType": "ACTUAL",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01179048",
+      "sourceIds": [
+        "ctgov-nct01179048"
+      ],
+      "demographics": {
+        "age": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "sex": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "gender": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "race": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "ethnicity": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        }
+      }
+    },
+    {
+      "nctId": "NCT01394952",
+      "title": "Researching Cardiovascular Events With a Weekly Incretin in Diabetes (REWIND)",
+      "summary": "The purpose of this trial is to assess whether dulaglutide can reduce major cardiovascular events and other serious outcomes in persons with type 2 diabetes, when added to their anti-hyperglycemic regimen.",
+      "conditions": [
+        "Cardiovascular Disease",
+        "Diabetes Mellitus, Type 2"
+      ],
+      "interventions": [
+        "Dulaglutide",
+        "Placebo"
+      ],
+      "status": "COMPLETED",
+      "studyType": "INTERVENTIONAL",
+      "hasResults": true,
+      "usLocation": {
+        "country": "United States",
+        "facility": "For additional information regarding investigative sites for this trial, contact 1-877-CTLILLY (1-877-285-4559, 1-317-615-4559) Mon - Fri from 9 AM to 5 PM Eastern Time (UTC/GMT - 5 hours, EST), or speak with your personal physician.",
+        "city": "Mobile",
+        "state": "Alabama",
+        "sourceIds": [
+          "ctgov-nct01394952"
+        ]
+      },
+      "completionDate": {
+        "value": "2018-08-21",
+        "precision": "day"
+      },
+      "enrollment": 9901,
+      "enrollmentType": "ACTUAL",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01394952",
+      "sourceIds": [
+        "ctgov-nct01394952"
+      ],
+      "demographics": {
+        "age": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "sex": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "gender": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "race": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "ethnicity": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        }
+      }
+    },
+    {
+      "nctId": "NCT01730534",
+      "title": "Multicenter Trial to Evaluate the Effect of Dapagliflozin on the Incidence of Cardiovascular Events",
+      "summary": "This study is being carried out to determine the effect of dapagliflozin on cardiovacular outcomes when added to current background therapy in patients with type 2 diabetes with either established cardiovacular disease or cardiovascular risk factors.",
+      "conditions": [
+        "Diabetes Mellitus, Non-Insulin-Dependent",
+        "High Risk for Cardiovascular Event"
+      ],
+      "interventions": [
+        "Dapagliflozin 10 mg",
+        "Placebo tablet"
+      ],
+      "status": "COMPLETED",
+      "studyType": "INTERVENTIONAL",
+      "hasResults": true,
+      "usLocation": {
+        "country": "United States",
+        "facility": "Research Site",
+        "city": "Alexander City",
+        "state": "Alabama",
+        "sourceIds": [
+          "ctgov-nct01730534"
+        ]
+      },
+      "completionDate": {
+        "value": "2018-09-11",
+        "precision": "day"
+      },
+      "enrollment": 17190,
+      "enrollmentType": "ACTUAL",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01730534",
+      "sourceIds": [
+        "ctgov-nct01730534"
+      ],
+      "demographics": {
+        "age": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "sex": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "gender": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "race": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "ethnicity": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        }
+      }
+    },
+    {
+      "nctId": "NCT02065791",
+      "title": "Evaluation of the Effects of Canagliflozin on Renal and Cardiovascular Outcomes in Participants With Diabetic Nephropathy",
+      "summary": "The goal of this study is to assess whether canagliflozin has a renal and vascular protective effect in reducing the progression of renal impairment relative to placebo in participants with type 2 diabetes mellitus (T2DM), Stage 2 or 3 chronic kidney disease (CKD) and macroalbuminuria, who are receiving standard of care including a maximum tolerated labeled daily dose of an angiotensin-converting enzyme inhibitor (ACEi) or angiotensin receptor blocker (ARB).",
+      "conditions": [
+        "Diabetes Mellitus, Type 2",
+        "Diabetic Nephropathy"
+      ],
+      "interventions": [
+        "Canagliflozin",
+        "Placebo"
+      ],
+      "status": "COMPLETED",
+      "studyType": "INTERVENTIONAL",
+      "hasResults": true,
+      "usLocation": {
+        "country": "United States",
+        "facility": null,
+        "city": "Birmingham",
+        "state": "Alabama",
+        "sourceIds": [
+          "ctgov-nct02065791"
+        ]
+      },
+      "completionDate": {
+        "value": "2018-10-30",
+        "precision": "day"
+      },
+      "enrollment": 4401,
+      "enrollmentType": "ACTUAL",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02065791",
+      "sourceIds": [
+        "ctgov-nct02065791"
+      ],
+      "demographics": {
+        "age": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "sex": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "gender": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "race": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        },
+        "ethnicity": {
+          "status": "not-extracted",
+          "measures": [],
+          "sourceIds": []
+        }
+      }
+    }
+  ]
+}
