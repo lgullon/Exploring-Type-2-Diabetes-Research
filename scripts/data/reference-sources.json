@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [
+    {
+      "id": "aact-snapshot-2026-11-17",
+      "author": "Clinical Trials Transformation Initiative (CTTI)",
+      "title": "AACT pipe-delimited flat-file export of ClinicalTrials.gov, data dated 2026-11-17 (file 20261118_export_ctgov.zip)",
+      "publicationDate": "2026-11-17",
+      "url": "https://aact.ctti-clinicaltrials.org/landing",
+      "accessedDate": "2026-11-18",
+      "supports": [
+        "Input snapshot for every trial record in this dataset. The downloaded zip has SHA-256 6f80d7298d5e3398852b82b60a31e15a03e138cbd2e564e161740318aa7e3822; downloads require a free AACT account.",
+        "Study status, design, posted-results dates, conditions, interventions, facility locations, baseline result groups and baseline measurements were read from the studies, conditions, interventions, brief_summaries, facilities, countries, result_groups, baseline_counts and baseline_measurements tables."
+      ]
+    },
+    {
+      "id": "aact-overview",
+      "author": "Clinical Trials Transformation Initiative (CTTI)",
+      "title": "AACT: The entire ClinicalTrials.gov registry, in one analyzable database",
+      "publicationDate": null,
+      "url": "https://aact.ctti-clinicaltrials.org/landing",
+      "accessedDate": "2026-11-18",
+      "supports": [
+        "AACT is a public relational database of ClinicalTrials.gov protocol and results data, refreshed daily, with downloadable full snapshots for registered users."
+      ]
+    }
+  ]
+}
