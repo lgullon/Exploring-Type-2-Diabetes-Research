@@ -1,0 +1,4 @@
+id|nct_id|name|removed
+1|NCT00000001|United States|f
+2|NCT00000006|Canada|f
+3|NCT00000006|United States|t

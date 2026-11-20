@@ -1,0 +1,18 @@
+id|nct_id|result_group_id|ctgov_group_code|classification|category|title|units|param_type|param_value|param_value_num|explanation_of_na|number_analyzed|number_analyzed_units
+1|NCT00000001|100|BG000||Female|Sex: Female, Male|Participants|COUNT_OF_PARTICIPANTS|25|25||56|Participants
+2|NCT00000001|100|BG000||Male|Sex: Female, Male|Participants|COUNT_OF_PARTICIPANTS|35|35||56|Participants
+3|NCT00000001|101|BG001||Female|Sex: Female, Male|Participants|COUNT_OF_PARTICIPANTS|30|30||13|Participants
+4|NCT00000001|101|BG001||Male|Sex: Female, Male|Participants|COUNT_OF_PARTICIPANTS|30|30||13|Participants
+5|NCT00000001|102|BG002||Female|Sex: Female, Male|Participants|COUNT_OF_PARTICIPANTS|55|55||26|Participants
+6|NCT00000001|102|BG002||Male|Sex: Female, Male|Participants|COUNT_OF_PARTICIPANTS|65|65||26|Participants
+7|NCT00000001|100|BG000|||Age, Continuous|years|MEAN|58.2|58.2||60|Participants
+8|NCT00000001|101|BG001|||Age, Continuous|years|MEAN|59.1|59.1||999|Participants
+9|NCT00000001|102|BG002|||Age, Continuous|years|MEAN|58.6|58.6||120|Participants
+10|NCT00000001|100|BG000||White|Race (NIH/OMB)|Participants|COUNT_OF_PARTICIPANTS|50|50||60|Participants
+11|NCT00000001|100|BG000||Black or African American|Race (NIH/OMB)|Participants|COUNT_OF_PARTICIPANTS|10|10||60|Participants
+12|NCT00000001|100|BG000|||HbA1c|percent|MEAN|8.1|8.1||60|Participants
+30|NCT00000007|200|BG000||Female|Gender|Participants|COUNT_OF_PARTICIPANTS|3|3||8|Participants
+31|NCT00000007|200|BG000||Male|Gender|Participants|COUNT_OF_PARTICIPANTS|4|4||8|Participants
+32|NCT00000007|200|BG000|||Race and Ethnicity Not Collected|Participants|COUNT_OF_PARTICIPANTS|0|0||8|Participants
+33|NCT00000007|200|BG000|||Age, Continuous|years|MEDIAN|NA||Not collected for this group|8|Participants
+34|NCT00000007|200|BG000|Male||Hair loss score|units on a scale|MEAN|2|2||4|Participants

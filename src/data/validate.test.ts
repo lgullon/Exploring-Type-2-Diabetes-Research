@@ -6,12 +6,22 @@ import { validateDataset, validateSources } from './validate';
 const registry = validateSources(rawSources);
 const sample = () => structuredClone(rawDataset);
 
-describe('checked-in source-backed sample', () => {
-  it('validates seven uniquely identified, eligible original records and all references', () => {
+describe('checked-in AACT snapshot', () => {
+  it('validates every uniquely identified, eligible original record and all references', () => {
     const dataset = validateDataset(rawDataset, registry);
-    expect(dataset.studies).toHaveLength(7);
-    expect(dataset.limitedSample).toBe(true);
-    expect(dataset.snapshotDate).toBe('2026-11-06');
+    expect(dataset.studies).toHaveLength(981);
+    expect(dataset.limitedSample).toBe(false);
+    expect(dataset.snapshotDate).toBe('2026-11-17');
+  });
+  it('resolves every demographic field to reported or not-reported, never not-extracted', () => {
+    const dataset = validateDataset(rawDataset, registry);
+    for (const study of dataset.studies) {
+      for (const field of Object.values(study.demographics)) expect(field.status).not.toBe('not-extracted');
+    }
+  });
+  it('is ordered by NCT ID so rebuilds are deterministic', () => {
+    const ids = rawDataset.studies.map((s) => s.nctId);
+    expect(ids).toEqual([...ids].sort());
   });
   it('rejects duplicate or malformed NCT identifiers', () => {
     const duplicate = sample(); duplicate.studies.push(duplicate.studies[0]);
@@ -50,19 +60,25 @@ describe('missingness and demographic boundaries (synthetic test mutations only)
     studies[0].enrollment = -1;
     expect(() => validateDataset(missing, registry)).toThrow(/enrollment/);
   });
-  it('does not treat unextracted fields as absent reporting', () => {
+  it('requires evidence before a field can be called not-reported', () => {
     const dataset = validateDataset(sample(), registry);
-    expect(dataset.studies[0].demographics.sex.status).toBe('not-extracted');
-    expect(dataset.studies[0].demographics.gender.status).toBe('not-extracted');
-    dataset.studies[0].demographics.age.status = 'not-reported';
+    const age = dataset.studies[0].demographics.age;
+    Object.assign(age, { status: 'not-extracted', measures: [], sourceIds: [], notes: [] });
+    expect(validateDataset(dataset, registry).studies[0].demographics.age.status).toBe('not-extracted');
+    age.status = 'not-reported';
     expect(() => validateDataset(dataset, registry)).toThrow(/evidence/);
-    dataset.studies[0].demographics.age.sourceIds = dataset.studies[0].sourceIds;
+    age.sourceIds = dataset.studies[0].sourceIds;
     expect(validateDataset(dataset, registry).studies[0].demographics.age.status).toBe('not-reported');
+  });
+  it('requires a notes list on every demographic field', () => {
+    const dataset = sample() as unknown as { studies: { demographics: { race: { notes?: unknown } } }[] };
+    delete dataset.studies[0].demographics.race.notes;
+    expect(() => validateDataset(dataset, registry)).toThrow(/notes/);
   });
   it('requires measures for reported fields and rejects measures on unextracted fields', () => {
     const dataset = validateDataset(sample(), registry);
     const age = dataset.studies[0].demographics.age;
-    age.status = 'reported'; age.sourceIds = dataset.studies[0].sourceIds;
+    age.measures = []; age.status = 'reported'; age.sourceIds = dataset.studies[0].sourceIds;
     expect(() => validateDataset(dataset, registry)).toThrow(/conflicts/);
     age.measures = [{ measureLabel: 'Synthetic age', categoryLabel: null, value: 0,
       unit: 'years', statisticType: 'Mean', population: 'Synthetic arm', denominator: null,

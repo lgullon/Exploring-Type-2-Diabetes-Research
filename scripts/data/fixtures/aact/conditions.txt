@@ -1,0 +1,11 @@
+id|nct_id|name
+1|NCT00000001|Diabetes Mellitus, Type 2
+2|NCT00000001|Obesity
+3|NCT00000002|Type 2 Diabetes
+4|NCT123|Type 2 Diabetes
+5|NCT00000005|At Risk of Type 2 Diabetes
+6|NCT00000006|Type 2 Diabetes
+7|NCT00000008|Type 2 Diabetes
+8|NCT00000009|Type 1 Diabetes
+20|NCT00000007|T2DM
+21|NCT00000007|Type 1 Diabetes

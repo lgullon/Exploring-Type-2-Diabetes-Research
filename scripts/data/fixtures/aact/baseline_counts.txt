@@ -1,0 +1,5 @@
+id|nct_id|result_group_id|scope|count
+1|NCT00000001|100|overall|60
+2|NCT00000001|101|overall|60
+3|NCT00000001|102|overall|120
+10|NCT00000007|200|overall|8

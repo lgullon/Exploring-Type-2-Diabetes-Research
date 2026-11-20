@@ -1,4 +1,4 @@
-import { demographicKeys, type SourceRegistry, type TrialDataset } from './types';
+import { demographicKeys, type SourceRegistry, type TrialDataset } from './types.ts';
 
 type Obj = Record<string, unknown>;
 function requireValue(condition: unknown, message: string): asserts condition {
@@ -104,6 +104,7 @@ export function validateDataset(input: unknown, registry: SourceRegistry): Trial
       requireValue(['reported', 'not-reported', 'not-extracted'].includes(d.status as string), `${key} requires a missingness status`);
       requireValue(Array.isArray(d.measures), `${key}.measures must be a list`);
       references(d.sourceIds, `${key}.sourceIds`, d.status !== 'not-extracted');
+      strings(d.notes, `${key}.notes`);
       requireValue(d.status === 'reported' ? d.measures.length > 0 : d.measures.length === 0, `${key} status conflicts with measures`);
       d.measures.forEach((measure) => {
         const m = object(measure, `${key}.measure`);

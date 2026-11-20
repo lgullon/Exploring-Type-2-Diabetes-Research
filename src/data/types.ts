@@ -18,6 +18,8 @@ export type DemographicField = {
   status: 'reported' | 'not-reported' | 'not-extracted';
   measures: DemographicMeasure[];
   sourceIds: string[];
+  /** Plain-language flags for ambiguous, combined or inconsistent source data. Never used to infer values. */
+  notes: string[];
 };
 export const demographicKeys = ['age', 'sex', 'gender', 'race', 'ethnicity'] as const;
 export type Demographics = Record<(typeof demographicKeys)[number], DemographicField>;

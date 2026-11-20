@@ -1,0 +1,6 @@
+id|nct_id|ctgov_group_code|result_type|title
+100|NCT00000001|BG000|Baseline|Metformin
+101|NCT00000001|BG001|Baseline|Placebo
+102|NCT00000001|BG002|Baseline|Total
+103|NCT00000001|OG000|Outcome|Metformin
+200|NCT00000007|BG000|Baseline|All participants
