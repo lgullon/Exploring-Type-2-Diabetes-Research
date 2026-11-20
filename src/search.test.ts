@@ -4,7 +4,7 @@ import { normalizeTokens, searchStudies } from './search'
 
 // Synthetic fixtures only: these records never enter the public dataset.
 function fixture(nctId: string, fields: Partial<Trial> = {}): Trial {
-  const missing = () => ({ status: 'not-extracted' as const, measures: [], sourceIds: [] })
+  const missing = () => ({ status: 'not-extracted' as const, measures: [], sourceIds: [], notes: [] })
   return {
     nctId, title: 'Synthetic study', summary: 'Synthetic description', conditions: [], interventions: [],
     status: 'COMPLETED', studyType: 'INTERVENTIONAL', hasResults: true,
@@ -36,9 +36,15 @@ describe('shared search rule', () => {
     expect(ids('diabetes')).toEqual(['NCT00000001'])
     expect(ids('lifestyle')).toEqual(['NCT00000001'])
   })
-  it('matches complete normalized tokens, not arbitrary substrings', () => {
-    expect(ids('met')).toEqual([])
+  it('matches the beginning of words, so partly typed words find results', () => {
+    expect(ids('metformi')).toEqual(['NCT00000003'])
+    expect(ids('MET')).toEqual(['NCT00000003'])
+    expect(ids('diab')).toEqual(['NCT00000001'])
     expect(ids('TYPE–2')).toEqual(['NCT00000001', 'NCT00000003'])
+  })
+  it('does not match text from the middle of a word', () => {
+    expect(ids('formin')).toEqual([])
+    expect(ids('sulin')).toEqual([])
   })
   it('shows all studies for empty or whitespace-only queries in stable NCT order', () => {
     expect(ids('')).toEqual(['NCT00000001', 'NCT00000002', 'NCT00000003'])
