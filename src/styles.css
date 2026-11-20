@@ -501,32 +501,103 @@ h1 {
   font-size:.65rem;
   overflow-wrap:anywhere
 }
-.demographics {
-  margin:15px 0 22px
+.demographic-domains {
+  margin:12px 0 22px
 }
-.demographics>div {
-  display:grid;
-  grid-template-columns:80px 1fr;
-  padding:9px 0;
-  border-bottom:1px solid #d2dbcb;
-  gap:18px
+.demographic-domain {
+  padding:14px 0;
+  border-bottom:1px solid #d2dbcb
 }
-.demographics dt {
-  text-transform:capitalize;
-  font-weight:700
+.demographic-domain h5 {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:.82rem;
+  margin:0 0 10px
 }
-.demographics dd {
-  margin:0
-}
-.demographic-status {
-  text-transform:capitalize;
+.status-badge {
+  font-size:.62rem;
+  font-weight:400;
+  padding:2px 9px;
+  border-radius:10px;
+  background:#dfe5d6;
   color:var(--muted)
 }
-.measure {
-  display:grid;
-  gap:3px;
-  font-size:.73rem;
-  margin-top:9px
+.status-badge.reported {
+  background:var(--accent);
+  color:var(--ink)
+}
+.table-scroll {
+  overflow-x:auto;
+  margin:0 0 12px
+}
+.table-scroll:focus-visible {
+  outline:2px solid var(--teal)
+}
+.demo-table {
+  border-collapse:collapse;
+  font-size:.72rem;
+  background:#f7f8f3;
+  min-width:60%
+}
+.demo-table caption {
+  caption-side:top;
+  text-align:left;
+  font-weight:700;
+  padding:0 0 6px
+}
+.demo-table th,.demo-table td {
+  border:1px solid #d2dbcb;
+  padding:6px 10px;
+  text-align:right;
+  font-variant-numeric:tabular-nums
+}
+.demo-table thead th {
+  vertical-align:bottom;
+  min-width:90px;
+  max-width:200px;
+  background:#e9ede2
+}
+.demo-table thead th:first-child,.demo-table tbody th {
+  text-align:left;
+  font-weight:400
+}
+.demo-table .total {
+  background:#e3e9d8;
+  font-weight:700
+}
+.demo-table td small {
+  color:var(--muted);
+  font-weight:400
+}
+.demo-table .denominator-row th,.demo-table .denominator-row td {
+  color:var(--muted);
+  font-size:.66rem;
+  background:#eef1e9
+}
+.demo-notes {
+  margin:0 0 6px;
+  padding-left:18px;
+  font-size:.7rem;
+  color:var(--muted);
+  line-height:1.65
+}
+.demo-source {
+  margin:0!important;
+  font-size:.65rem;
+  color:var(--muted)
+}
+.show-more {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  padding:28px 0 8px;
+  font-size:.75rem;
+  color:var(--muted)
+}
+.show-more p {
+  margin:0
 }
 .state-panel {
   padding:50px 24px;
@@ -900,9 +971,11 @@ h1 {
   .small-note {
     font-size:.66rem
   }
-  .demographics>div {
-    grid-template-columns:60px 1fr;
-    gap:10px
+  .demo-table {
+    font-size:.66rem
+  }
+  .demo-table th,.demo-table td {
+    padding:5px 7px
   }
   .about-section {
     grid-template-columns:1fr;
