@@ -175,7 +175,13 @@ const PARTICIPANT_UNITS = /^participants?$/i;
  * classifications or missing values), where a total would be meaningless.
  */
 export function categorySum(groupRows: BaselineRow[]): number | null {
-  if (!groupRows.every((r) => r.param_type === 'COUNT_OF_PARTICIPANTS' && !r.classification.trim())) return null;
+  // Participant counts: the standard type, or the older "NUMBER" type when its unit is participants.
+  const isCount = (r: BaselineRow) =>
+    r.param_type === 'COUNT_OF_PARTICIPANTS' || (r.param_type === 'NUMBER' && PARTICIPANT_UNITS.test(r.units.trim()));
+  if (!groupRows.every(isCount)) return null;
+  // One level of categories, whichever AACT column holds the label; two-level tables are not summed.
+  const oneLevel = groupRows.every((r) => !r.classification.trim()) || groupRows.every((r) => !r.category.trim());
+  if (!oneLevel) return null;
   const values = groupRows.map(measureValue);
   if (values.some((v) => typeof v !== 'number')) return null;
   return (values as number[]).reduce((a, b) => a + b, 0);

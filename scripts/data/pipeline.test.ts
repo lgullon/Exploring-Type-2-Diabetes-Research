@@ -92,6 +92,16 @@ describe('demographic classification and denominators', () => {
     expect(confirmedDenominator([{ ...female, number_analyzed: '56' }, { ...male, number_analyzed: '56' }], 60)).toBe(60);
     // A genuine smaller per-measure count: the categories add up to it.
     expect(confirmedDenominator([{ ...female, number_analyzed: '60' }, { ...male, param_value_num: '35', number_analyzed: '60' }], 70)).toBe(60);
+    // Customized measures may hold their category label in the classification column instead.
+    const white = row({ classification: 'White', param_value_num: '50', number_analyzed: '999' });
+    const black = row({ classification: 'Black', param_value_num: '10', number_analyzed: '999' });
+    expect(confirmedDenominator([white, black], 60)).toBe(60);
+    // Older registry counts use the NUMBER type with participant units; percentages do not count.
+    const numberCounts = [white, black].map((r) => ({ ...r, param_type: 'NUMBER' }));
+    expect(confirmedDenominator(numberCounts, 60)).toBe(60);
+    expect(confirmedDenominator(numberCounts.map((r) => ({ ...r, units: 'percentage of participants' })), 60)).toBeNull();
+    // Two-level tables (classification and category both used) are not summed.
+    expect(confirmedDenominator([{ ...white, category: 'Female' }, { ...black, category: 'Male' }], 60)).toBeNull();
     // A continuous measure cannot be cross-checked against categories.
     const mean = row({ title: 'Age, Continuous', param_type: 'MEAN', param_value_num: '58', number_analyzed: '999' });
     expect(confirmedDenominator([mean], 60)).toBeNull();
