@@ -14,6 +14,7 @@ const reference: SourceRegistry = {
   sources: [
     { id: 'aact-snapshot-2026-11-17', author: 'Fixture', title: 'Fixture snapshot', publicationDate: '2026-11-17', url: 'https://example.org/aact', accessedDate: '2026-11-18', supports: ['Test input.'] },
     { id: 'aact-overview', author: 'Fixture', title: 'Fixture overview', publicationDate: null, url: 'https://example.org/aact', accessedDate: '2026-11-18', supports: ['Test input.'] },
+    { id: 'tasneem-2012-aact', author: 'Fixture', title: 'Fixture AACT paper', publicationDate: null, url: 'https://example.org/paper', accessedDate: '2026-11-18', supports: ['Test input.'] },
   ],
 };
 const build = () => buildDataset(FIXTURES, '2026-11-18', reference);

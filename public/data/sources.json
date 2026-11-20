@@ -25,6 +25,42 @@
       ]
     },
     {
+      "id": "tasneem-2012-aact",
+      "author": "Tasneem A, Aberle L, Ananth H, Chakraborty S, Chiswell K, McCourt BJ, Pietrobon R",
+      "title": "The database for aggregate analysis of ClinicalTrials.gov (AACT) and subsequent regrouping by clinical specialty. PLoS ONE 7(3):e33677",
+      "publicationDate": "2012-03-16",
+      "url": "https://doi.org/10.1371/journal.pone.0033677",
+      "accessedDate": "2026-11-20",
+      "supports": [
+        "Describes how AACT was built from the ClinicalTrials.gov registry for aggregate analysis, and that data structure, nomenclature and changes in data collection over time make registry data harder to analyze and interpret.",
+        "Describes grouping studies by condition using both MeSH terms assigned by an NLM algorithm and condition terms supplied by sponsors, the two sources compared when choosing this dataset's type 2 diabetes rule."
+      ]
+    },
+    {
+      "id": "turner-2022-race-ethnicity-reporting",
+      "author": "Turner BE, Steinberg JR, Weeks BT, Rodriguez F, Cullen MR",
+      "title": "Race/ethnicity reporting and representation in US clinical trials: a cohort study. Lancet Regional Health: Americas 11:100252",
+      "publicationDate": "2022-04-10",
+      "url": "https://doi.org/10.1016/j.lana.2022.100252",
+      "accessedDate": "2026-11-20",
+      "supports": [
+        "Among 20,692 U.S.-based ClinicalTrials.gov trials with reported results (registered 2000 to 2020), only 43% reported any race/ethnicity data.",
+        "Context for showing missing race and ethnicity as not reported rather than hiding those studies, and for treating reporting as something that varies between trials."
+      ]
+    },
+    {
+      "id": "heidari-2016-sager",
+      "author": "Heidari S, Babor TF, De Castro P, Tort S, Curno M",
+      "title": "Sex and Gender Equity in Research: rationale for the SAGER guidelines and recommended use. Research Integrity and Peer Review 1:2",
+      "publicationDate": "2016-05-03",
+      "url": "https://doi.org/10.1186/s41073-016-0007-6",
+      "accessedDate": "2026-11-20",
+      "supports": [
+        "International guidelines for systematically reporting sex and gender information in study design, analyses, results and interpretation.",
+        "Basis for keeping sex and gender as separate fields and keeping each measure under the label the study used."
+      ]
+    },
+    {
       "id": "ctgov-nct00000620",
       "author": "National Heart, Lung, and Blood Institute (NHLBI); ClinicalTrials.gov, U.S. National Library of Medicine",
       "title": "Action to Control Cardiovascular Risk in Diabetes (ACCORD) (NCT00000620)",

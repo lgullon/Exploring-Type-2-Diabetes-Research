@@ -202,7 +202,7 @@ export async function buildDataset(inputDir: string, accessedDate: string, refer
         `${e['type-2-diabetes-only-in-at-risk-or-healthy-condition']} naming type 2 diabetes only for at-risk, prevention or healthy-volunteer groups; ` +
         `${e['no-us-facility']} without a listed U.S. facility; ${e['missing-required-field']} missing a title, summary or intervention; ` +
         `${e['invalid-nct-id'] + e['duplicate-nct-id']} with invalid or duplicated IDs. Studies are not excluded for missing demographic data.`,
-      sourceIds: [snapshotSourceId, 'aact-overview'],
+      sourceIds: [snapshotSourceId, 'aact-overview', 'tasneem-2012-aact'],
     },
     studies,
   };

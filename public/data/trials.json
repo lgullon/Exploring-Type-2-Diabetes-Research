@@ -14,7 +14,8 @@
     "selectionMethod": "Every study in the AACT ClinicalTrials.gov snapshot dated 2026-11-17 that meets all inclusion rules: 981 of 612,286 registry records. Excluded: 549,088 not completed, not interventional or without posted results; 61,599 without a type 2 diabetes condition; 3 naming type 2 diabetes only for at-risk, prevention or healthy-volunteer groups; 615 without a listed U.S. facility; 0 missing a title, summary or intervention; 0 with invalid or duplicated IDs. Studies are not excluded for missing demographic data.",
     "sourceIds": [
       "aact-snapshot-2026-11-17",
-      "aact-overview"
+      "aact-overview",
+      "tasneem-2012-aact"
     ]
   },
   "studies": [
