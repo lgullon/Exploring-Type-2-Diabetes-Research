@@ -1,0 +1,5 @@
+id|nct_id|description
+1|NCT00000001|"Line one | with a pipe~Line two ""quoted""
+continued on a new line"
+2|NCT00000007|Short summary.
+3|NCT00000008|No interventions listed.

@@ -1,0 +1,4 @@
+id|nct_id|name
+2|NCT00000001|Placebo
+1|NCT00000001|Metformin
+3|NCT00000007|Insulin glargine

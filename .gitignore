@@ -9,4 +9,5 @@ coverage/
 
 # Raw AACT downloads and extracted tables stay outside Git (see docs/methodology.md).
 *.zip
-aact/
+/aact/
+/data-raw/

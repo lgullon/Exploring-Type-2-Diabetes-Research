@@ -1,0 +1,7 @@
+id|nct_id|name|city|state|country
+9|NCT00000001|Toronto Site|Toronto|Ontario|Canada
+11|NCT00000001|Second US Site|Boston|Massachusetts|United States
+10|NCT00000001|Example Clinic|San Diego|California|United States
+12|NCT00000006|Montreal Site|Montreal|Quebec|Canada
+13|NCT00000008|Example Clinic|Denver|Colorado|United States
+20|NCT00000007||Houston|Texas|United States
