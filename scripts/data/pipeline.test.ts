@@ -5,7 +5,7 @@ import type { SourceRegistry } from '../../src/data/types';
 import { readRows, splitRecord } from './aact';
 import { buildDataset } from './build';
 import { classifyCondition, conditionExclusion } from './cohort';
-import { buildDemographics, classifyMeasure, confirmedDenominator, parseCompletionDate, parseCount, type BaselineRow } from './normalize';
+import { assignMeasureInstances, buildDemographics, classifyMeasure, confirmedDenominator, parseCompletionDate, parseCount, type BaselineRow } from './normalize';
 
 // Small synthetic AACT tables. Every record is invented; none enters the public dataset.
 const FIXTURES = fileURLToPath(new URL('./fixtures/aact', import.meta.url));
@@ -108,6 +108,48 @@ describe('demographic classification and denominators', () => {
     expect(confirmedDenominator([mean], 60)).toBeNull();
     expect(confirmedDenominator([{ ...mean, number_analyzed: '60' }], 60)).toBe(60);
   });
+  it('starts a new posting when a cell repeats, even with the same description', () => {
+    const a = row({ id: '1', category: 'Female', param_value_num: '5' });
+    const b = row({ id: '2', category: 'Male', param_value_num: '6' });
+    const again = row({ id: '3', category: 'Female', param_value_num: '7' });
+    const instances = assignMeasureInstances([a, b, again]);
+    expect([a, b, again].map((r) => instances.get(r))).toEqual([1, 1, 2]);
+  });
+  it('keeps race-then-ethnicity style tables together and explains why they total twice the group', () => {
+    const count = (id: string, classification: string, value: string) =>
+      row({ id, title: 'Race/Ethnicity, Customized', classification, param_value_num: value, number_analyzed: '56' });
+    const rows = [count('1', 'White', '7'), count('2', 'Black', '3'), count('3', 'Hispanic', '2'), count('4', 'Not Hispanic', '8')];
+    const { demographics } = buildDemographics(rows, new Map(), new Map([['g', 10]]), 'src');
+    expect(new Set(demographics.race.measures.map((m) => m.measureInstance))).toEqual(new Set([1]));
+    expect(demographics.race.measures.every((m) => m.denominator === null)).toBe(true);
+    expect(demographics.race.notes.join(' ')).toMatch(/add up to 2 times each group's size/);
+    // Even when AACT's "number analyzed" equals the doubled total, it is not accepted as the denominator.
+    const doubled = rows.map((r) => ({ ...r, number_analyzed: '20' }));
+    expect(confirmedDenominator(doubled, 10)).toBeNull();
+  });
+  it('does not count a field where every participant is in an unknown category, but keeps real zeros', () => {
+    const race = (id: string, category: string, value: string) =>
+      row({ id, title: 'Race (NIH/OMB)', category, param_value_num: value, number_analyzed: '40' });
+    const allUnknown = buildDemographics(
+      [race('1', 'White', '0'), race('2', 'Black or African American', '0'), race('3', 'Unknown or Not Reported', '40')],
+      new Map(), new Map([['g', 40]]), 'src');
+    expect(allUnknown.demographics.race).toMatchObject({ status: 'not-reported', measures: [] });
+    expect(allUnknown.demographics.race.notes[0]).toBe(
+      'Posted "Race (NIH/OMB)" with every participant counted as "Unknown or Not Reported", so treated as not reported.');
+    const someKnown = buildDemographics(
+      [race('1', 'White', '0'), race('2', 'Black or African American', '5'), race('3', 'Unknown or Not Reported', '35')],
+      new Map(), new Map([['g', 40]]), 'src');
+    expect(someKnown.demographics.race.status).toBe('reported');
+    expect(someKnown.demographics.race.measures.map((m) => m.value)).toEqual([0, 5, 35]);
+  });
+  it('keeps a real zero as reported data alongside other categories', () => {
+    const race = (id: string, category: string, value: string) =>
+      row({ id, category, title: 'Race (NIH/OMB)', param_value_num: value, number_analyzed: '40' });
+    const { demographics } = buildDemographics(
+      [race('1', 'American Indian or Alaska Native', '0'), race('2', 'White', '40')], new Map(), new Map([['g', 40]]), 'src');
+    expect(demographics.race.status).toBe('reported');
+    expect(demographics.race.measures.map((m) => m.value)).toEqual([0, 40]);
+  });
   it('marks unmatched fields not-reported, with every field resolved', () => {
     const { demographics } = buildDemographics([row({ param_value_num: '5', number_analyzed: '5' })], new Map(), new Map(), 'src');
     expect(demographics.sex.status).toBe('reported');
@@ -164,11 +206,36 @@ describe('end-to-end build from fixture tables', () => {
       ['Placebo (BG001)', 'Female', 30, 60], ['Placebo (BG001)', 'Male', 30, 60],
       ['Total (BG002)', 'Female', 55, 120], ['Total (BG002)', 'Male', 65, 120],
     ]);
-    expect(sex.notes.join(' ')).toMatch(/did not match the posted group counts/);
-    const age = dataset.studies[0].demographics.age.measures.map((m) => m.denominator);
-    expect(age).toEqual([60, null, 120]);
-    expect(dataset.studies[0].demographics.ethnicity.status).toBe('not-reported');
+    // The table shows the confirmed denominator; AACT's own number is not repeated in a note.
+    expect(sex.notes).toEqual([]);
     expect(dataset.studies[0].demographics.race.measures).toHaveLength(2);
+  });
+
+  it('keeps repeated postings of one measure separate instead of merging them', async () => {
+    const { dataset } = await build();
+    const age = dataset.studies[0].demographics.age.measures;
+    expect(age.map((m) => [m.measureInstance, m.measureDescription, m.population, m.value, m.denominator])).toEqual([
+      [1, 'Randomised population.', 'Metformin (BG000)', 58.2, 60],
+      [1, 'Randomised population.', 'Placebo (BG001)', 59.1, null],
+      [1, 'Randomised population.', 'Total (BG002)', 58.6, 120],
+      [2, 'Non-randomised population.', 'Metformin (BG000)', 61.9, 60],
+      [2, 'Non-randomised population.', 'Placebo (BG001)', null, null],
+      [2, 'Non-randomised population.', 'Total (BG002)', 61.9, 120],
+    ]);
+    // Every posting/category/group cell is distinct, so no value can hide another.
+    const cells = age.map((m) => `${m.measureInstance}|${m.categoryLabel}|${m.population}`);
+    expect(new Set(cells).size).toBe(cells.length);
+    expect(dataset.studies[0].demographics.age.notes.join(' ')).toContain(
+      'Some values in "Age, Continuous" (table 2 of 2) were posted as not available. The study\'s explanation: Values are in the other posting.',
+    );
+  });
+
+  it('does not count a zero from a group with zero participants analyzed as reporting', async () => {
+    const { dataset } = await build();
+    const ethnicity = dataset.studies[0].demographics.ethnicity;
+    expect(ethnicity.status).toBe('not-reported');
+    expect(ethnicity.measures).toEqual([]);
+    expect(ethnicity.notes[0]).toBe('Posted "Ethnicity (NIH/OMB)" without any values from participants analyzed, so treated as not reported.');
   });
 
   it('flags labeled gender, not-collected race/ethnicity, missing values and count mismatches', async () => {
@@ -176,13 +243,23 @@ describe('end-to-end build from fixture tables', () => {
     const d = dataset.studies[1].demographics;
     expect(d.gender.status).toBe('reported');
     expect(d.sex.status).toBe('not-reported');
-    expect(d.sex.notes).toContain('No measure labeled as sex was reported. See the measure labeled "Gender" under gender.');
+    expect(d.sex.notes).toContain('No measure labeled sex; see the measure labeled "Gender" under Gender.');
     expect(d.gender.notes.join(' ')).toMatch(/add up to 7, not 8/);
     expect(d.race.status).toBe('not-reported');
-    expect(d.race.notes).toContain('The study reported that race and ethnicity were not collected.');
-    expect(d.age.measures[0].value).toBeNull();
-    expect(d.age.notes.join(' ')).toMatch(/not available \(Not collected for this group\)/);
+    expect(d.race.notes).toContain('The study states that race and ethnicity were not collected.');
     expect(report.needsReview).toEqual({ NCT00000007: ['Hair loss score'] });
+  });
+
+  it('treats a measure posted with only missing values as not reported, keeping the explanation', async () => {
+    const { dataset } = await build();
+    const d = dataset.studies[1].demographics;
+    // "Age, Continuous" was posted with only NA; "Sex/Gender, Customized" likewise.
+    expect(d.age).toMatchObject({ status: 'not-reported', measures: [] });
+    expect(d.age.notes).toContain("The study's explanation: Not collected for this group.");
+    expect(d.sex).toMatchObject({ status: 'not-reported', measures: [] });
+    expect(d.sex.notes).toContain("The study's explanation: Sex was not collected for this study.");
+    // A posted zero from analyzed participants is still data.
+    expect(d.gender.measures.map((m) => m.value)).toEqual([3, 4]);
   });
 
   it('produces identical output from identical input', async () => {

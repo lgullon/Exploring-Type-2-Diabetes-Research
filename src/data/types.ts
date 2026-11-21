@@ -3,6 +3,14 @@ export type PartialDate = { value: string; precision: 'year' | 'month' | 'day' }
 
 export type DemographicMeasure = {
   measureLabel: string;
+  /** The study's own description of the measure, if it posted one. */
+  measureDescription: string | null;
+  /**
+   * Which posting of this measureLabel the row belongs to (1, 2, ...). A study
+   * can post the same title more than once, e.g. for different populations;
+   * rows from different postings are separate tables and must not be merged.
+   */
+  measureInstance: number;
   categoryLabel: string | null;
   value: number | string | null;
   unit: string | null;

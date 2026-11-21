@@ -28,7 +28,7 @@ function formatValue(measure: DemographicMeasure | undefined): string {
  * One measure as posted: categories as rows, result groups (arms and Total) as
  * columns. Values are shown exactly as reported; nothing is summed or converted.
  */
-function MeasureTable({ label, measures }: { label: string; measures: DemographicMeasure[] }) {
+function MeasureTable({ label, description, measures }: { label: string; description: string | null; measures: DemographicMeasure[] }) {
   const populations = distinctInOrder(measures.map(m => m.population))
   const categories = distinctInOrder(measures.map(m => m.categoryLabel))
   const cells = new Map(measures.map(m => [`${m.categoryLabel}\u0000${m.population}`, m]))
@@ -46,7 +46,7 @@ function MeasureTable({ label, measures }: { label: string; measures: Demographi
 
   return <div className="table-scroll" role="region" aria-label={label} tabIndex={0}>
     <table className="demo-table">
-      <caption>{caption}</caption>
+      <caption>{caption}{description && <span className="measure-description">{description}</span>}</caption>
       <thead><tr>
         <th scope="col">Category</th>
         {populations.map(p => <th scope="col" key={p} className={isTotal(p) ? 'total' : undefined}>{p}</th>)}
@@ -77,14 +77,22 @@ export function DemographicTables({ demographics, renderCitations }: {
   return <div className="demographic-domains">
     {(Object.keys(domainLabels) as (keyof Demographics)[]).map(key => {
       const field = demographics[key]
+      // One table per posted measure: a study may post the same title more than once.
       const byMeasure = new Map<string, DemographicMeasure[]>()
       for (const m of field.measures) {
-        const list = byMeasure.get(m.measureLabel)
-        if (list) list.push(m); else byMeasure.set(m.measureLabel, [m])
+        const key = `${m.measureLabel}\u0000${m.measureInstance}`
+        const list = byMeasure.get(key)
+        if (list) list.push(m); else byMeasure.set(key, [m])
       }
+      const postings = (label: string) => field.measures.reduce((n, m) => m.measureLabel === label ? Math.max(n, m.measureInstance) : n, 0)
       return <section className="demographic-domain" key={key} aria-label={domainLabels[key]}>
         <h5>{domainLabels[key]} <span className={`status-badge ${field.status}`}>{statusLabels[field.status]}</span></h5>
-        {[...byMeasure].map(([label, measures]) => <MeasureTable key={label} label={label} measures={measures} />)}
+        {[...byMeasure].map(([key, measures]) => {
+          const { measureLabel, measureInstance, measureDescription } = measures[0]
+          const count = postings(measureLabel)
+          const label = count > 1 ? `${measureLabel} (table ${measureInstance} of ${count})` : measureLabel
+          return <MeasureTable key={key} label={label} description={measureDescription} measures={measures} />
+        })}
         {field.notes.length > 0 && <ul className="demo-notes">{field.notes.map(note => <li key={note}>{note}</li>)}</ul>}
         {field.sourceIds.length > 0 && <p className="demo-source">Source: {renderCitations(field.sourceIds)}</p>}
       </section>

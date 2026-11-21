@@ -19,11 +19,15 @@ export function normalizeTitle(title: string): string {
 type TitleRule = { domain: Domain; note?: string };
 
 const COMBINED_SEX_GENDER =
-  'Reported under the registry measure "Sex/Gender, Customized", so its categories may describe sex, gender or both. They are kept as reported.';
+  'Posted as "Sex/Gender, Customized": the categories may describe sex, gender or both.';
 const LABELED_GENDER =
-  'The study labeled this measure "Gender". It is kept under gender as labeled and is not reclassified as sex.';
+  'Posted as "Gender" and kept as labeled, not treated as sex.';
 const COMBINED_RACE_ETHNICITY =
-  'Reported as one combined race/ethnicity measure. Its categories may mix race and ethnicity and are kept as reported, not split.';
+  'Posted as one combined race/ethnicity measure; categories are kept as posted, not split.';
+/** Categories that say a characteristic is unknown rather than describing participants. */
+export const UNKNOWN_CATEGORY = /\b(unknown|not reported|not collected|missing|declined|refused|not available|prefer not|not provided|not disclosed)\b/i;
+/** Registry boilerplate that adds nothing beyond the "Not available" cell itself. */
+const BOILERPLATE_EXPLANATION = /^total not calculated because/i;
 
 const TITLE_RULES: Record<string, TitleRule> = {
   'age, continuous': { domain: 'age' },
@@ -136,6 +140,8 @@ export type BaselineRow = {
   classification: string;
   category: string;
   title: string;
+  /** The study's description of the measure; distinguishes repeated postings of one title. */
+  description?: string;
   units: string;
   param_type: string;
   param_value: string;
@@ -200,16 +206,45 @@ export function confirmedDenominator(groupRows: BaselineRow[], groupCount: numbe
   const analyzed = new Set(groupRows.map((r) => parseCount(r.number_analyzed)));
   const reported = analyzed.size === 1 ? [...analyzed][0] : null;
   const sum = categorySum(groupRows);
-  if (reported !== null && (reported === groupCount || reported === sum)) return reported;
+  // A denominator can never exceed the group's own baseline count (that would mean participants counted twice).
+  const withinGroup = (n: number) => groupCount === undefined || n <= groupCount;
+  if (reported !== null && (reported === groupCount || (reported === sum && withinGroup(reported)))) return reported;
   if (groupCount !== undefined && sum === groupCount) return groupCount;
   return null;
 }
 
+
+/**
+ * Split a study's demographic rows into posted measures. A study can post the
+ * same title more than once (for example one "Age, Continuous" for a
+ * randomised population and another for a non-randomised one). Rows belong to
+ * a new posting when the description, unit or statistic changes, or when a
+ * category/group cell repeats. Postings of a title are numbered from 1.
+ */
+export function assignMeasureInstances(ordered: BaselineRow[]): Map<BaselineRow, number> {
+  const instance = new Map<BaselineRow, number>();
+  const current = new Map<string, { n: number; signature: string; cells: Set<string> }>();
+  for (const row of ordered) {
+    const title = row.title.trim();
+    const signature = [(row.description ?? '').trim(), row.units.trim(), row.param_type.trim()].join('\u0000');
+    const cell = [row.classification.trim(), row.category.trim(), row.result_group_id].join('\u0000');
+    let posting = current.get(title);
+    if (!posting || posting.signature !== signature || posting.cells.has(cell)) {
+      posting = { n: (posting?.n ?? 0) + 1, signature, cells: new Set() };
+      current.set(title, posting);
+    }
+    posting.cells.add(cell);
+    instance.set(row, posting.n);
+  }
+  return instance;
+}
+
 /**
  * Build the five demographic fields for one study from all of its baseline
- * measurement rows. Every study passed here has posted results, so a field
- * with no matching measure is "not-reported" (verified by inspecting all of
- * the study's baseline titles), never "not-extracted".
+ * measurement rows. Every study passed here has posted results, so a field is
+ * "reported" only when a matching measure has at least one posted value from a
+ * group with participants analyzed; otherwise it is "not-reported" (verified by
+ * inspecting all of the study's baseline titles), never "not-extracted".
  */
 export function buildDemographics(
   rows: BaselineRow[],
@@ -220,14 +255,26 @@ export function buildDemographics(
   const ordered = [...rows].sort((a, b) => Number(a.id) - Number(b.id));
   const measures = Object.fromEntries(demographicKeys.map((k) => [k, [] as DemographicMeasure[]])) as Record<Domain, DemographicMeasure[]>;
   const notes = Object.fromEntries(demographicKeys.map((k) => [k, new Set<string>()])) as Record<Domain, Set<string>>;
+  const explanations = Object.fromEntries(demographicKeys.map((k) => [k, new Set<string>()])) as Record<Domain, Set<string>>;
+  const hasValue = Object.fromEntries(demographicKeys.map((k) => [k, false])) as Record<Domain, boolean>;
+  const describes = Object.fromEntries(demographicKeys.map((k) => [k, false])) as Record<Domain, boolean>;
+  const missingReasons = Object.fromEntries(demographicKeys.map((k) => [k, new Map<string, Set<string>>()])) as Record<Domain, Map<string, Set<string>>>;
   const needsReview = new Set<string>();
   let notCollected = false;
 
-  // Rows of each demographic measure, per result group.
+  const demographicRows = ordered.filter((row) => classifyMeasure(row.title, row.classification, row.category).kind === 'demographic');
+  const instances = assignMeasureInstances(demographicRows);
+  const postings = new Map<string, number>();
+  for (const row of demographicRows) postings.set(row.title.trim(), Math.max(postings.get(row.title.trim()) ?? 0, instances.get(row)!));
+  // How notes name a measure: "Age, Continuous", or "Age, Continuous" (table 2 of 2) when the title repeats.
+  const measureName = (title: string, instance: number) =>
+    postings.get(title)! > 1 ? `"${title}" (table ${instance} of ${postings.get(title)})` : `"${title}"`;
+  const endSentence = (text: string) => (/[.!?]$/.test(text) ? text : `${text}.`);
+
+  // Rows of each posted measure, per result group.
   const byMeasureGroup = new Map<string, BaselineRow[]>();
-  const measureGroupKey = (row: BaselineRow) => `${row.title.trim()}\u0000${row.result_group_id}`;
-  for (const row of ordered) {
-    if (classifyMeasure(row.title, row.classification, row.category).kind !== 'demographic') continue;
+  const measureGroupKey = (row: BaselineRow) => `${row.title.trim()}\u0000${instances.get(row)}\u0000${row.result_group_id}`;
+  for (const row of demographicRows) {
     const list = byMeasureGroup.get(measureGroupKey(row));
     if (list) list.push(row); else byMeasureGroup.set(measureGroupKey(row), [row]);
   }
@@ -244,25 +291,36 @@ export function buildDemographics(
     const { domain, note } = cls.rule;
     if (note) notes[domain].add(note);
     const title = row.title.trim();
+    const instance = instances.get(row)!;
+    const named = measureName(title, instance);
     const population = populationLabel(row, groups);
     const value = measureValue(row);
     const denominator = denominators.get(measureGroupKey(row)) ?? null;
+    const reportedAnalyzed = parseCount(row.number_analyzed);
+    // The table already shows "Not available"; only the study's own reason is worth a note.
     if (value === null) {
       const why = row.explanation_of_na.trim();
-      notes[domain].add(`${population}: a value for "${title}" is not available${why ? ` (${why})` : ''}.`);
+      if (why && !BOILERPLATE_EXPLANATION.test(why)) {
+        explanations[domain].add(why);
+        const byMeasure = missingReasons[domain].get(named) ?? missingReasons[domain].set(named, new Set()).get(named)!;
+        byMeasure.add(why);
+      }
     }
-    const reportedAnalyzed = parseCount(row.number_analyzed);
-    if (denominator === null && reportedAnalyzed !== null) {
-      notes[domain].add(`AACT's "number analyzed" for "${title}" could not be confirmed against the posted group counts, so those denominators are left unknown.`);
-    } else if (denominator !== null && reportedAnalyzed !== null && reportedAnalyzed !== denominator) {
-      notes[domain].add(`AACT's "number analyzed" for "${title}" did not match the posted group counts, so each group's baseline participant count, which the categories add up to, is used as the denominator.`);
+    // Zero is a posted value; a value from a group with zero participants analyzed is not.
+    if (value !== null && denominator !== 0 && reportedAnalyzed !== 0) {
+      hasValue[domain] = true;
+      // Describes participants: an uncategorized value (e.g. mean age), or a known category above zero.
+      const category = categoryLabel(row);
+      if (category === null || (!UNKNOWN_CATEGORY.test(category) && (typeof value !== 'number' || value > 0))) describes[domain] = true;
     }
     const analyzedUnits = row.number_analyzed_units.trim();
     if (denominator !== null && analyzedUnits && !PARTICIPANT_UNITS.test(analyzedUnits)) {
-      notes[domain].add(`"${title}" was analyzed in units of "${analyzedUnits}", not participants.`);
+      notes[domain].add(`${named} was analyzed in units of "${analyzedUnits}", not participants.`);
     }
     measures[domain].push({
       measureLabel: title,
+      measureDescription: (row.description ?? '').trim() || null,
+      measureInstance: instance,
       categoryLabel: categoryLabel(row),
       value,
       unit: row.units.trim() || null,
@@ -273,25 +331,59 @@ export function buildDemographics(
     });
   }
 
+  for (const k of demographicKeys) {
+    for (const [named, whys] of missingReasons[k]) {
+      notes[k].add(`Some values in ${named} were posted as not available. The study's explanation: ${[...whys].map(endSentence).join(' ')}`);
+    }
+  }
+
   // Count measures whose categories do not add up to the confirmed denominator are flagged, never fixed.
   for (const [key, groupRows] of byMeasureGroup) {
     const sum = categorySum(groupRows);
     const denominator = denominators.get(key) ?? null;
-    if (sum === null || denominator === null || sum === denominator) continue;
     const cls = classifyMeasure(groupRows[0].title);
-    if (cls.kind !== 'demographic') continue;
-    notes[cls.rule.domain].add(`${populationLabel(groupRows[0], groups)}: categories of "${groupRows[0].title.trim()}" add up to ${sum}, not ${denominator}.`);
+    if (sum === null || cls.kind !== 'demographic') continue;
+    const named = measureName(groupRows[0].title.trim(), instances.get(groupRows[0])!);
+    const groupCount = groupCounts.get(groupRows[0].result_group_id);
+    // AACT cannot show whether such a table is one measure counting people more
+    // than once (e.g. race then ethnicity) or several measures posted under one
+    // title, so the table is kept together and the reason is stated.
+    const multiple = denominator === null && groupCount ? sum / groupCount : 0;
+    if (Number.isInteger(multiple) && multiple >= 2) {
+      notes[cls.rule.domain].add(`The categories of ${named} add up to ${multiple} times each group's size (people may be counted in more than one category, or ${multiple} measures share this title). Do not add them together.`);
+      continue;
+    }
+    if (denominator === null || sum === denominator) continue;
+    notes[cls.rule.domain].add(`${populationLabel(groupRows[0], groups)}: the categories of ${named} add up to ${sum}, not ${denominator}.`);
+  }
+
+  // A field whose measures say nothing about participants is not reported: no
+  // usable values at all, or only counts in categories such as "Unknown or Not
+  // Reported". The rows are dropped and a note records what was posted.
+  for (const k of demographicKeys) {
+    if (measures[k].length === 0 || describes[k]) continue;
+    const titles = [...new Set(measures[k].map((m) => `"${m.measureLabel}"`))].join(', ');
+    const unknownCategories = [...new Set(measures[k]
+      .filter((m) => typeof m.value === 'number' && m.value > 0 && m.categoryLabel !== null && UNKNOWN_CATEGORY.test(m.categoryLabel))
+      .map((m) => `"${m.categoryLabel}"`))].join(', ');
+    measures[k] = [];
+    notes[k] = new Set([
+      hasValue[k]
+        ? `Posted ${titles} with every participant counted as ${unknownCategories || 'unknown'}, so treated as not reported.`
+        : `Posted ${titles} without any values from participants analyzed, so treated as not reported.`,
+      ...[...explanations[k]].map((w) => `The study's explanation: ${endSentence(w)}`),
+    ]);
   }
 
   if (notCollected) {
-    notes.race.add('The study reported that race and ethnicity were not collected.');
-    notes.ethnicity.add('The study reported that race and ethnicity were not collected.');
+    notes.race.add('The study states that race and ethnicity were not collected.');
+    notes.ethnicity.add('The study states that race and ethnicity were not collected.');
   }
   if (measures.ethnicity.length === 0 && measures.race.some((m) => TITLE_RULES[normalizeTitle(m.measureLabel)]?.note === COMBINED_RACE_ETHNICITY)) {
-    notes.ethnicity.add('No separate ethnicity measure was reported. See the combined race/ethnicity measure under race.');
+    notes.ethnicity.add('No separate ethnicity measure; see the combined race/ethnicity measure under Race.');
   }
   if (measures.sex.length === 0 && measures.gender.length > 0) {
-    notes.sex.add('No measure labeled as sex was reported. See the measure labeled "Gender" under gender.');
+    notes.sex.add('No measure labeled sex; see the measure labeled "Gender" under Gender.');
   }
 
   const demographics = Object.fromEntries(

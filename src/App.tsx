@@ -50,7 +50,7 @@ const StudyCard = memo(function StudyCard({ study, index }: { study: Trial; inde
           <h4>Listed U.S. study site</h4><p>{[study.usLocation.facility, study.usLocation.city, study.usLocation.state, study.usLocation.country].filter(Boolean).join(', ')}. <Citations ids={study.usLocation.sourceIds} /></p>
           <p className="small-note">A listed U.S. site does not show where every participant lived. Enrollment is the number listed for the whole study and may differ from the population used in a demographic analysis.</p>
           <h4>Participant demographic data</h4>
-          <p className="small-note">Values come from the study’s posted baseline characteristics, exactly as labeled. Each column is one study group; the Total column covers all groups, so do not add it to the others. “Not reported” means the posted results include no measure with that label. Eligibility criteria describe who could join a study, not who actually participated.</p>
+          <p className="small-note">Values come from the study’s posted baseline characteristics, exactly as labeled. Each column is one study group; the Total column covers all groups, so do not add it to the others. “Number analyzed” shows “Not available” when the count could not be confirmed from the posted data. “Not reported” means the posted results include no measure with that label. Eligibility criteria describe who could join a study, not who actually participated.</p>
           <DemographicTables demographics={study.demographics} renderCitations={ids => <Citations ids={ids} />} />
           <p className="small-note">Study sources: <Citations ids={study.sourceIds} /></p>
         </div>}
