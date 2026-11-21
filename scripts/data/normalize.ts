@@ -24,6 +24,8 @@ const LABELED_GENDER =
   'Posted as "Gender" and kept as labeled, not treated as sex.';
 const COMBINED_RACE_ETHNICITY =
   'Posted as one combined race/ethnicity measure; categories are kept as posted, not split.';
+/** Categories that say a characteristic is unknown rather than describing participants. */
+export const UNKNOWN_CATEGORY = /\b(unknown|not reported|not collected|missing|declined|refused|not available|prefer not|not provided|not disclosed)\b/i;
 /** Registry boilerplate that adds nothing beyond the "Not available" cell itself. */
 const BOILERPLATE_EXPLANATION = /^total not calculated because/i;
 
@@ -255,6 +257,7 @@ export function buildDemographics(
   const notes = Object.fromEntries(demographicKeys.map((k) => [k, new Set<string>()])) as Record<Domain, Set<string>>;
   const explanations = Object.fromEntries(demographicKeys.map((k) => [k, new Set<string>()])) as Record<Domain, Set<string>>;
   const hasValue = Object.fromEntries(demographicKeys.map((k) => [k, false])) as Record<Domain, boolean>;
+  const describes = Object.fromEntries(demographicKeys.map((k) => [k, false])) as Record<Domain, boolean>;
   const missingReasons = Object.fromEntries(demographicKeys.map((k) => [k, new Map<string, Set<string>>()])) as Record<Domain, Map<string, Set<string>>>;
   const needsReview = new Set<string>();
   let notCollected = false;
@@ -304,7 +307,12 @@ export function buildDemographics(
       }
     }
     // Zero is a posted value; a value from a group with zero participants analyzed is not.
-    if (value !== null && denominator !== 0 && reportedAnalyzed !== 0) hasValue[domain] = true;
+    if (value !== null && denominator !== 0 && reportedAnalyzed !== 0) {
+      hasValue[domain] = true;
+      // Describes participants: an uncategorized value (e.g. mean age), or a known category above zero.
+      const category = categoryLabel(row);
+      if (category === null || (!UNKNOWN_CATEGORY.test(category) && (typeof value !== 'number' || value > 0))) describes[domain] = true;
+    }
     const analyzedUnits = row.number_analyzed_units.trim();
     if (denominator !== null && analyzedUnits && !PARTICIPANT_UNITS.test(analyzedUnits)) {
       notes[domain].add(`${named} was analyzed in units of "${analyzedUnits}", not participants.`);
@@ -349,14 +357,20 @@ export function buildDemographics(
     notes[cls.rule.domain].add(`${populationLabel(groupRows[0], groups)}: the categories of ${named} add up to ${sum}, not ${denominator}.`);
   }
 
-  // A field whose measures carry no usable values is not reported. The empty
-  // rows are dropped and replaced by a note that keeps the study's own explanation.
+  // A field whose measures say nothing about participants is not reported: no
+  // usable values at all, or only counts in categories such as "Unknown or Not
+  // Reported". The rows are dropped and a note records what was posted.
   for (const k of demographicKeys) {
-    if (measures[k].length === 0 || hasValue[k]) continue;
+    if (measures[k].length === 0 || describes[k]) continue;
     const titles = [...new Set(measures[k].map((m) => `"${m.measureLabel}"`))].join(', ');
+    const unknownCategories = [...new Set(measures[k]
+      .filter((m) => typeof m.value === 'number' && m.value > 0 && m.categoryLabel !== null && UNKNOWN_CATEGORY.test(m.categoryLabel))
+      .map((m) => `"${m.categoryLabel}"`))].join(', ');
     measures[k] = [];
     notes[k] = new Set([
-      `Posted ${titles} without any values from participants analyzed, so treated as not reported.`,
+      hasValue[k]
+        ? `Posted ${titles} with every participant counted as ${unknownCategories || 'unknown'}, so treated as not reported.`
+        : `Posted ${titles} without any values from participants analyzed, so treated as not reported.`,
       ...[...explanations[k]].map((w) => `The study's explanation: ${endSentence(w)}`),
     ]);
   }

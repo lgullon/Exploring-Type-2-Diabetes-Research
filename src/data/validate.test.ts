@@ -19,6 +19,24 @@ describe('checked-in AACT snapshot', () => {
       for (const field of Object.values(study.demographics)) expect(field.status).not.toBe('not-extracted');
     }
   });
+  it('marks a field reported only when a value describes participants, keeping real zeros', () => {
+    const unknown = /\b(unknown|not reported|not collected|missing|declined|refused|not available|prefer not|not provided|not disclosed)\b/i;
+    let zeros = 0;
+    type Field = { status: string; measures: { value: unknown; categoryLabel: string | null }[] };
+    for (const study of rawDataset.studies) {
+      for (const [key, field] of Object.entries(study.demographics) as [string, Field][]) {
+        if (field.status !== 'reported') continue;
+        const describes = field.measures.some((m) => m.value !== null &&
+          (m.categoryLabel === null || (!unknown.test(m.categoryLabel) && (typeof m.value !== 'number' || m.value > 0))));
+        expect(describes, `${study.nctId} ${key}`).toBe(true);
+        zeros += field.measures.filter((m) => m.value === 0).length;
+      }
+    }
+    expect(zeros).toBeGreaterThan(1000);
+    const byId = (id: string) => rawDataset.studies.find((s) => s.nctId === id)!.demographics;
+    expect(byId('NCT00119041').sex.status).toBe('not-reported');
+    expect(byId('NCT01154933').sex.status).toBe('not-reported');
+  });
   it('is ordered by NCT ID so rebuilds are deterministic', () => {
     const ids = rawDataset.studies.map((s) => s.nctId);
     expect(ids).toEqual([...ids].sort());

@@ -127,11 +127,28 @@ describe('demographic classification and denominators', () => {
     const doubled = rows.map((r) => ({ ...r, number_analyzed: '20' }));
     expect(confirmedDenominator(doubled, 10)).toBeNull();
   });
-  it('keeps a real zero as reported data', () => {
-    const zero = row({ category: 'American Indian or Alaska Native', title: 'Race (NIH/OMB)', param_value_num: '0', number_analyzed: '40' });
-    const { demographics } = buildDemographics([zero], new Map(), new Map([['g', 40]]), 'src');
+  it('does not count a field where every participant is in an unknown category, but keeps real zeros', () => {
+    const race = (id: string, category: string, value: string) =>
+      row({ id, title: 'Race (NIH/OMB)', category, param_value_num: value, number_analyzed: '40' });
+    const allUnknown = buildDemographics(
+      [race('1', 'White', '0'), race('2', 'Black or African American', '0'), race('3', 'Unknown or Not Reported', '40')],
+      new Map(), new Map([['g', 40]]), 'src');
+    expect(allUnknown.demographics.race).toMatchObject({ status: 'not-reported', measures: [] });
+    expect(allUnknown.demographics.race.notes[0]).toBe(
+      'Posted "Race (NIH/OMB)" with every participant counted as "Unknown or Not Reported", so treated as not reported.');
+    const someKnown = buildDemographics(
+      [race('1', 'White', '0'), race('2', 'Black or African American', '5'), race('3', 'Unknown or Not Reported', '35')],
+      new Map(), new Map([['g', 40]]), 'src');
+    expect(someKnown.demographics.race.status).toBe('reported');
+    expect(someKnown.demographics.race.measures.map((m) => m.value)).toEqual([0, 5, 35]);
+  });
+  it('keeps a real zero as reported data alongside other categories', () => {
+    const race = (id: string, category: string, value: string) =>
+      row({ id, category, title: 'Race (NIH/OMB)', param_value_num: value, number_analyzed: '40' });
+    const { demographics } = buildDemographics(
+      [race('1', 'American Indian or Alaska Native', '0'), race('2', 'White', '40')], new Map(), new Map([['g', 40]]), 'src');
     expect(demographics.race.status).toBe('reported');
-    expect(demographics.race.measures[0].value).toBe(0);
+    expect(demographics.race.measures.map((m) => m.value)).toEqual([0, 40]);
   });
   it('marks unmatched fields not-reported, with every field resolved', () => {
     const { demographics } = buildDemographics([row({ param_value_num: '5', number_analyzed: '5' })], new Map(), new Map(), 'src');
