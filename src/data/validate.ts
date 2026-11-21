@@ -106,9 +106,15 @@ export function validateDataset(input: unknown, registry: SourceRegistry): Trial
       references(d.sourceIds, `${key}.sourceIds`, d.status !== 'not-extracted');
       strings(d.notes, `${key}.notes`);
       requireValue(d.status === 'reported' ? d.measures.length > 0 : d.measures.length === 0, `${key} status conflicts with measures`);
+      requireValue(d.status !== 'reported' || d.measures.some((m) => (m as Obj).value !== null), `${key} is reported but has no posted values`);
+      // One cell per posting, category and group: repeated postings must carry distinct measureInstance values.
+      const cells = new Set(d.measures.map((m) => { const x = m as Obj; return `${x.measureLabel}\u0000${x.measureInstance}\u0000${x.categoryLabel}\u0000${x.population}`; }));
+      requireValue(cells.size === d.measures.length, `${key} has two values for the same measure, category and group`);
       d.measures.forEach((measure) => {
         const m = object(measure, `${key}.measure`);
         text(m.measureLabel, 'measureLabel'); text(m.population, 'population');
+        nullableText(m.measureDescription, 'measureDescription');
+        requireValue(Number.isSafeInteger(m.measureInstance) && (m.measureInstance as number) >= 1, 'measureInstance must be a positive whole number');
         for (const field of ['categoryLabel', 'unit', 'statisticType']) nullableText(m[field], field);
         requireValue(m.value === null || (typeof m.value === 'number' && Number.isFinite(m.value)) || (typeof m.value === 'string' && m.value.trim().length > 0), 'measure value must preserve a number, text or null');
         count(m.denominator, 'denominator'); references(m.sourceIds, 'measure.sourceIds');

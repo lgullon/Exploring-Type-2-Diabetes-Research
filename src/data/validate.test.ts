@@ -70,6 +70,18 @@ describe('missingness and demographic boundaries (synthetic test mutations only)
     age.sourceIds = dataset.studies[0].sourceIds;
     expect(validateDataset(dataset, registry).studies[0].demographics.age.status).toBe('not-reported');
   });
+  it('rejects reported fields with no posted values and cells that would overwrite each other', () => {
+    const dataset = validateDataset(sample(), registry);
+    const study = dataset.studies.find((s) => s.demographics.sex.measures.length >= 2)!;
+    const sex = study.demographics.sex;
+    const original = sex.measures.map((m) => ({ ...m }));
+    sex.measures = original.map((m) => ({ ...m, value: null }));
+    expect(() => validateDataset(dataset, registry)).toThrow(/no posted values/);
+    sex.measures = [original[0], { ...original[0] }];
+    expect(() => validateDataset(dataset, registry)).toThrow(/same measure, category and group/);
+    sex.measures = [original[0], { ...original[0], measureInstance: 2 }];
+    expect(validateDataset(dataset, registry).studies).toHaveLength(981);
+  });
   it('requires a notes list on every demographic field', () => {
     const dataset = sample() as unknown as { studies: { demographics: { race: { notes?: unknown } } }[] };
     delete dataset.studies[0].demographics.race.notes;
@@ -80,7 +92,7 @@ describe('missingness and demographic boundaries (synthetic test mutations only)
     const age = dataset.studies[0].demographics.age;
     age.measures = []; age.status = 'reported'; age.sourceIds = dataset.studies[0].sourceIds;
     expect(() => validateDataset(dataset, registry)).toThrow(/conflicts/);
-    age.measures = [{ measureLabel: 'Synthetic age', categoryLabel: null, value: 0,
+    age.measures = [{ measureLabel: 'Synthetic age', measureDescription: null, measureInstance: 1, categoryLabel: null, value: 0,
       unit: 'years', statisticType: 'Mean', population: 'Synthetic arm', denominator: null,
       sourceIds: dataset.studies[0].sourceIds }];
     expect(validateDataset(dataset, registry).studies[0].demographics.age.measures[0].value).toBe(0);
