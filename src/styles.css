@@ -546,6 +546,14 @@ h1 {
   font-weight:700;
   padding:0 0 6px
 }
+.measure-description {
+  display:block;
+  font-weight:400;
+  color:var(--muted);
+  font-size:.68rem;
+  white-space:normal;
+  max-width:60ch
+}
 .demo-table th,.demo-table td {
   border:1px solid #d2dbcb;
   padding:6px 10px;
