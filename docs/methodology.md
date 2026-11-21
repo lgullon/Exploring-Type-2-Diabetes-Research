@@ -110,10 +110,10 @@ Sex and gender are kept separate, following the distinction in the SAGER reporti
 
 Every study in the cohort has posted results, and all of its baseline titles were inspected. So each field is either:
 
-- **reported**: at least one matching measure with a posted value from a group with participants analyzed. A posted 0 counts (for example 0 American Indian or Alaska Native participants), or
+- **reported**: at least one posted value, from a group with participants analyzed, that describes participants: an uncategorized value such as mean age, or a count above 0 in a category other than an "unknown" one (Unknown, Not Reported, Missing, Declined and similar). Zeros are kept in the tables (for example 0 American Indian or Alaska Native participants), or
 - **not-reported**: no such value in the posted baseline table. If the study posted the registry's "Race and Ethnicity Not Collected" statement (29 studies), race and ethnicity carry a note saying so.
 
-A measure posted with only "NA" values, or only values from a group with 0 participants analyzed, is not reporting. Two studies are affected: NCT00119041 posted "Sex/Gender, Customized" with every value "NA" ("Gender was not collected for this study"), and NCT01154933 posted a single 0 out of 0 participants analyzed. Their sex fields are not reported; the empty rows are dropped and a note keeps the study's own explanation.
+So a measure posted with only "NA" values, only values from a group with 0 participants analyzed, or every participant in an "unknown" category is not reporting. Five fields are affected. NCT00119041 posted "Sex/Gender, Customized" with every value "NA" ("Gender was not collected for this study"), and NCT01154933 posted a single 0 out of 0 participants analyzed; their sex fields are not reported. NCT02910089 and NCT06015685 (race) and NCT02197520 (ethnicity) counted every participant as "Unknown or Not Reported" (for example 1,362 of 1,362); those fields are not reported. In each case the rows are dropped and a note records what the study posted and its own explanation.
 
 No field is left `not-extracted`. Missing reporting is shown, never hidden, because incomplete race/ethnicity reporting is common in ClinicalTrials.gov results [turner-2022-race-ethnicity-reporting].
 
@@ -123,8 +123,8 @@ No field is left `not-extracted`. Missing reporting is shown, never hidden, beca
 | Sex | 943 | 38 |
 | Gender | 38 | 943 |
 | Sex or gender (either) | 979 | 2 |
-| Race | 632 | 349 |
-| Ethnicity | 391 | 590 |
+| Race | 630 | 351 |
+| Ethnicity | 390 | 591 |
 
 Reporting completeness is not a measure of study quality, validity or clinical relevance.
 
@@ -169,14 +169,14 @@ Category totals are only computed for single-level participant counts (`COUNT_OF
 
 This check found the denominator problem described above and led to two fixes before release.
 
-**Follow-up review (2026-11-20):** a teammate's review of the merged data found that repeated postings of one title were merged in 8 studies, hiding values in the site's tables, and that 2 sex fields were marked reported without any usable value. After the fixes above, 64 studies were compared with ClinicalTrials.gov: all 8 affected studies, the 2 status changes, every study whose race/ethnicity or age table adds up to a multiple of the group size, the 8 studies above, and 12 more chosen at random.
+**Follow-up review (2026-11-20):** a teammate's review of the merged data found that repeated postings of one title were merged in 8 studies, hiding values in the site's tables, and that 2 sex fields were marked reported without any usable value; checking for the same problem found 3 race/ethnicity fields where every participant was "Unknown or Not Reported". After the fixes above, 67 studies were compared with ClinicalTrials.gov: all 8 affected studies, all 5 status changes, every study whose race/ethnicity or age table adds up to a multiple of the group size, the 8 studies above, and 12 more chosen at random.
 
-- 2,690 exported demographic values matched ClinicalTrials.gov in value, unit, statistic type, group and denominator, apart from 86 the studies posted as "NA" (stored as `null`).
+- 2,712 exported demographic values matched ClinicalTrials.gov in value, unit, statistic type, group and denominator, apart from 86 the studies posted as "NA" (stored as `null`).
 - In the other direction, every value ClinicalTrials.gov posts for a reported field was found in the export.
 - Every reported or not-reported status matched one derived directly from ClinicalTrials.gov.
 - The only other difference was one summary missing quotation marks, which AACT's export removes.
 
-A whole-dataset scan also found no colliding table cells, no reported field without a usable value, no count larger than its denominator, no garbled text, and no completion date after the snapshot. These are spot checks, not proof that every record is correct.
+A whole-dataset scan (confirmed to flag all 5 status problems and all 8 affected studies when run on the previous data) found no colliding table cells, no reported field without a value describing participants, no count larger than its denominator, no garbled text, and no completion date after the snapshot. These are spot checks, not proof that every record is correct.
 
 ## Limitations
 
@@ -199,7 +199,7 @@ The website only reads the committed JSON. Running the pipeline is needed only t
    `tar -xf 20261118_export_ctgov.zip -C <folder> studies.txt conditions.txt countries.txt facilities.txt brief_summaries.txt interventions.txt result_groups.txt baseline_counts.txt baseline_measurements.txt`
 3. Run `npm run data:build -- --input <folder> --accessed 2026-11-18`. On Windows PowerShell, use `npm.cmd` if scripts are blocked. This takes about 35 seconds.
 4. `git diff --stat -- public/data` should show no changes. The committed files have these SHA-256 values:
-   `trials.json 50a80b4e4e4b8136b239434ff02d74bc68a4e132f33b8fc49a60a342051cf014`,
+   `trials.json 3504707fc33ad4053c398165127fbc120d191fad5db2279b96e3472a74b26df2`,
    `sources.json 9a1ad1e7a03bce8ca203b0c044ccc20e24c4a48757ac2f9c348be78c5dee45ab`.
 
 **Refresh to a newer snapshot:**
