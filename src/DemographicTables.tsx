@@ -89,7 +89,8 @@ export function DemographicTables({ demographics, renderCitations }: {
         <h5>{domainLabels[key]} <span className={`status-badge ${field.status}`}>{statusLabels[field.status]}</span></h5>
         {[...byMeasure].map(([key, measures]) => {
           const { measureLabel, measureInstance, measureDescription } = measures[0]
-          const label = postings(measureLabel) > 1 ? `${measureLabel} (posting ${measureInstance})` : measureLabel
+          const count = postings(measureLabel)
+          const label = count > 1 ? `${measureLabel} (table ${measureInstance} of ${count})` : measureLabel
           return <MeasureTable key={key} label={label} description={measureDescription} measures={measures} />
         })}
         {field.notes.length > 0 && <ul className="demo-notes">{field.notes.map(note => <li key={note}>{note}</li>)}</ul>}

@@ -133,7 +133,7 @@ Reporting completeness is not a measure of study quality, validity or clinical r
 Each measure row keeps:
 - the original title (`measureLabel`), the study's description of the measure if any (`measureDescription`), and which posting of that title the row belongs to (`measureInstance`);
 - the category (`categoryLabel`), with AACT's classification and category joined by " / " when both are present;
-- the value exactly as posted (a number, the original text, or `null` when the study posted "NA", with a note giving the study's explanation);
+- the value exactly as posted (a number, the original text, or `null` when the study posted "NA"; the study's explanation is kept as one note per measure unless it is registry boilerplate such as "Total not calculated because data are not available");
 - the unit and statistic type (`param_type`, for example `COUNT_OF_PARTICIPANTS` or `MEAN`);
 - the result group as `population` (group title and code, for example "Placebo (BG001)").
 
@@ -151,7 +151,9 @@ So a denominator is stored only when it can be confirmed:
 
 1. AACT's value is used when it equals the group's baseline participant count (`baseline_counts`), or equals the measure's category total without exceeding the group's baseline count.
 2. Otherwise the group's baseline count is used when the categories add up to it.
-3. Otherwise the denominator is `null` with a note.
+3. Otherwise the denominator is `null`, shown on the site as "Not available".
+
+AACT's own "number analyzed" is never shown, so the site does not repeat this explanation on every study; it is stated once above the demographic tables and in this document.
 
 Category totals are only computed for single-level participant counts (`COUNT_OF_PARTICIPANTS`, or `NUMBER` in participant units). Each posting is checked separately. As a result, 5,006 of 32,647 measure values (15%) have an unknown denominator. These are mostly means, such as average age, percentages, and tables whose categories add up to a multiple of the group size, where nothing can be cross-checked. When the categories of a count measure do not add up to the confirmed denominator, a note says so; the values are not changed.
 
@@ -162,7 +164,7 @@ Category totals are only computed for single-level participant counts (`COUNT_OF
 **Against original records (2026-11-20):** 8 exported studies were compared field by field with their original ClinicalTrials.gov records, retrieved from the ClinicalTrials.gov API rather than from AACT. Six were chosen for difficult cases: NCT00032487, NCT01730534, NCT00518115, NCT00147745, NCT00179400 and NCT02004366. Two were chosen at random: NCT00528372 and NCT03837405.
 
 - 88 study fields checked (title, summary, conditions, interventions, status, type, results, completion date, enrollment, U.S. site and source link): no discrepancies.
-- 532 demographic values checked (value, unit, statistic type, group and denominator): no discrepancies. Every stored denominator matched ClinicalTrials.gov. The only differences were 19 values the study itself posted as "NA", which are stored as `null` with a note, as intended.
+- 532 demographic values checked (value, unit, statistic type, group and denominator): no discrepancies. Every stored denominator matched ClinicalTrials.gov. The only differences were 19 values the study itself posted as "NA", which are stored as `null` (shown as "Not available"), as intended.
 - For these 8 studies, no posted age, sex, gender, race or ethnicity measure was missing from the export, so each "not reported" status was correct.
 
 This check found the denominator problem described above and led to two fixes before release.
@@ -197,7 +199,7 @@ The website only reads the committed JSON. Running the pipeline is needed only t
    `tar -xf 20261118_export_ctgov.zip -C <folder> studies.txt conditions.txt countries.txt facilities.txt brief_summaries.txt interventions.txt result_groups.txt baseline_counts.txt baseline_measurements.txt`
 3. Run `npm run data:build -- --input <folder> --accessed 2026-11-18`. On Windows PowerShell, use `npm.cmd` if scripts are blocked. This takes about 35 seconds.
 4. `git diff --stat -- public/data` should show no changes. The committed files have these SHA-256 values:
-   `trials.json 29cf786953ed022a90f7c0a7f08d988533abc6906a0c27400c8713526c1c14c0`,
+   `trials.json 50a80b4e4e4b8136b239434ff02d74bc68a4e132f33b8fc49a60a342051cf014`,
    `sources.json 9a1ad1e7a03bce8ca203b0c044ccc20e24c4a48757ac2f9c348be78c5dee45ab`.
 
 **Refresh to a newer snapshot:**
