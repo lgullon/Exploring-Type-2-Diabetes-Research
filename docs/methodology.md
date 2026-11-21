@@ -96,7 +96,7 @@ Measures are matched by their exact registry title (case and spacing ignored), a
 | --- | --- | --- |
 | age | Age, Continuous; Age Continuous; Age, Categorical; Age, Customized; Age Range; Age Group; Age at Screening; and three female-only age titles | |
 | sex | Sex: Female, Male; Parent-reported sex of their child: female | |
-| sex | Sex/Gender, Customized | Categories may describe sex, gender or both (21 studies) |
+| sex | Sex/Gender, Customized | Categories may describe sex, gender or both (19 studies) |
 | gender | Gender | Kept as labeled, not reclassified as sex (38 studies) |
 | race | Race (NIH/OMB); Race | |
 | race | Race/Ethnicity, Customized; Race/Ethnicity; Race-Ethnicity | Combined measure, not split into race and ethnicity (238 studies) |
@@ -110,17 +110,19 @@ Sex and gender are kept separate, following the distinction in the SAGER reporti
 
 Every study in the cohort has posted results, and all of its baseline titles were inspected. So each field is either:
 
-- **reported**: at least one matching measure, or
-- **not-reported**: no matching measure in the posted baseline table. If the study posted the registry's "Race and Ethnicity Not Collected" statement (30 studies), race and ethnicity carry a note saying so.
+- **reported**: at least one matching measure with a posted value from a group with participants analyzed. A posted 0 counts (for example 0 American Indian or Alaska Native participants), or
+- **not-reported**: no such value in the posted baseline table. If the study posted the registry's "Race and Ethnicity Not Collected" statement (29 studies), race and ethnicity carry a note saying so.
+
+A measure posted with only "NA" values, or only values from a group with 0 participants analyzed, is not reporting. Two studies are affected: NCT00119041 posted "Sex/Gender, Customized" with every value "NA" ("Gender was not collected for this study"), and NCT01154933 posted a single 0 out of 0 participants analyzed. Their sex fields are not reported; the empty rows are dropped and a note keeps the study's own explanation.
 
 No field is left `not-extracted`. Missing reporting is shown, never hidden, because incomplete race/ethnicity reporting is common in ClinicalTrials.gov results [turner-2022-race-ethnicity-reporting].
 
 | Field | Reported | Not reported |
 | --- | ---: | ---: |
 | Age | 981 | 0 |
-| Sex | 945 | 36 |
+| Sex | 943 | 38 |
 | Gender | 38 | 943 |
-| Sex or gender (either) | 981 | 0 |
+| Sex or gender (either) | 979 | 2 |
 | Race | 632 | 349 |
 | Ethnicity | 391 | 590 |
 
@@ -129,11 +131,13 @@ Reporting completeness is not a measure of study quality, validity or clinical r
 ### Measures
 
 Each measure row keeps:
-- the original title (`measureLabel`);
+- the original title (`measureLabel`), the study's description of the measure if any (`measureDescription`), and which posting of that title the row belongs to (`measureInstance`);
 - the category (`categoryLabel`), with AACT's classification and category joined by " / " when both are present;
 - the value exactly as posted (a number, the original text, or `null` when the study posted "NA", with a note giving the study's explanation);
 - the unit and statistic type (`param_type`, for example `COUNT_OF_PARTICIPANTS` or `MEAN`);
 - the result group as `population` (group title and code, for example "Placebo (BG001)").
+
+**Repeated titles.** A study can post the same title more than once, for example one "Age, Continuous" measure for a non-randomised group and another for randomised groups (NCT01388361). Rows start a new posting when the description, unit or statistic type changes, or when a category and group repeat. Postings are numbered (`measureInstance`) and shown as separate tables, so no value can overwrite another; 12 studies have more than one posting of a title. AACT has no measure identifier, so two postings that share title, description, unit and statistic type and never repeat a cell (for example a race measure followed by an ethnicity measure, both titled "Race/Ethnicity, Customized") cannot be told apart from one measure that lists both. Those stay one table with every value shown, and when the categories add up to a whole multiple of each group's size a note says so (35 studies).
 
 Arm rows and the Total row are kept separate and are never added together. No percentages are calculated and no categories are combined. Measures of spread (standard deviations, ranges) are not stored, because the contract has no field for them.
 
@@ -145,11 +149,11 @@ Across single-level sex, race, ethnicity and categorical age measures, 6,047 of 
 
 So a denominator is stored only when it can be confirmed:
 
-1. AACT's value is used when it equals the group's baseline participant count (`baseline_counts`) or the measure's category total.
+1. AACT's value is used when it equals the group's baseline participant count (`baseline_counts`), or equals the measure's category total without exceeding the group's baseline count.
 2. Otherwise the group's baseline count is used when the categories add up to it.
 3. Otherwise the denominator is `null` with a note.
 
-Category totals are only computed for single-level participant counts (`COUNT_OF_PARTICIPANTS`, or `NUMBER` in participant units). As a result, 5,283 of 32,652 measure values (16%) have an unknown denominator. These are mostly means, such as average age, and percentages, where nothing can be cross-checked. When the categories of a count measure do not add up to the confirmed denominator, a note says so; the values are not changed.
+Category totals are only computed for single-level participant counts (`COUNT_OF_PARTICIPANTS`, or `NUMBER` in participant units). Each posting is checked separately. As a result, 5,006 of 32,647 measure values (15%) have an unknown denominator. These are mostly means, such as average age, percentages, and tables whose categories add up to a multiple of the group size, where nothing can be cross-checked. When the categories of a count measure do not add up to the confirmed denominator, a note says so; the values are not changed.
 
 ## Verification
 
@@ -161,7 +165,16 @@ Category totals are only computed for single-level participant counts (`COUNT_OF
 - 532 demographic values checked (value, unit, statistic type, group and denominator): no discrepancies. Every stored denominator matched ClinicalTrials.gov. The only differences were 19 values the study itself posted as "NA", which are stored as `null` with a note, as intended.
 - For these 8 studies, no posted age, sex, gender, race or ethnicity measure was missing from the export, so each "not reported" status was correct.
 
-This check found the denominator problem described above and led to two fixes before release. Eight studies is a spot check, not proof that every record is correct.
+This check found the denominator problem described above and led to two fixes before release.
+
+**Follow-up review (2026-11-20):** a teammate's review of the merged data found that repeated postings of one title were merged in 8 studies, hiding values in the site's tables, and that 2 sex fields were marked reported without any usable value. After the fixes above, 64 studies were compared with ClinicalTrials.gov: all 8 affected studies, the 2 status changes, every study whose race/ethnicity or age table adds up to a multiple of the group size, the 8 studies above, and 12 more chosen at random.
+
+- 2,690 exported demographic values matched ClinicalTrials.gov in value, unit, statistic type, group and denominator, apart from 86 the studies posted as "NA" (stored as `null`).
+- In the other direction, every value ClinicalTrials.gov posts for a reported field was found in the export.
+- Every reported or not-reported status matched one derived directly from ClinicalTrials.gov.
+- The only other difference was one summary missing quotation marks, which AACT's export removes.
+
+A whole-dataset scan also found no colliding table cells, no reported field without a usable value, no count larger than its denominator, no garbled text, and no completion date after the snapshot. These are spot checks, not proof that every record is correct.
 
 ## Limitations
 
@@ -169,8 +182,9 @@ This check found the denominator problem described above and led to two fixes be
 - Inclusion depends on investigators naming type 2 diabetes in the condition list; studies listing only "Diabetes" are missed.
 - A U.S. facility does not mean U.S. participants.
 - Demographics are only as complete as each study's posting. Labels vary between studies and are kept as posted, so categories are not always comparable across studies.
-- 16% of measure values have an unknown denominator, and measures of spread are not stored.
-- Summaries keep AACT's `~` line-break markers.
+- 15% of measure values have an unknown denominator, and measures of spread are not stored.
+- Two measures posted under one title can appear as one table when AACT gives no way to separate them (35 studies carry a note).
+- Summaries keep AACT's `~` line-break markers. AACT's flat-file export also removes double quotation marks from text, so quoted phrases appear without quotes.
 
 ## Rebuilding and refreshing
 
@@ -183,7 +197,7 @@ The website only reads the committed JSON. Running the pipeline is needed only t
    `tar -xf 20261118_export_ctgov.zip -C <folder> studies.txt conditions.txt countries.txt facilities.txt brief_summaries.txt interventions.txt result_groups.txt baseline_counts.txt baseline_measurements.txt`
 3. Run `npm run data:build -- --input <folder> --accessed 2026-11-18`. On Windows PowerShell, use `npm.cmd` if scripts are blocked. This takes about 35 seconds.
 4. `git diff --stat -- public/data` should show no changes. The committed files have these SHA-256 values:
-   `trials.json d2a6ac56df4769bb67dbaf819c616d3b36e43f93d65755b92ca805d818e59b04`,
+   `trials.json 29cf786953ed022a90f7c0a7f08d988533abc6906a0c27400c8713526c1c14c0`,
    `sources.json 9a1ad1e7a03bce8ca203b0c044ccc20e24c4a48757ac2f9c348be78c5dee45ab`.
 
 **Refresh to a newer snapshot:**
