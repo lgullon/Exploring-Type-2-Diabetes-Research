@@ -189,7 +189,8 @@ describe('end-to-end build from fixture tables', () => {
       ['Placebo (BG001)', 'Female', 30, 60], ['Placebo (BG001)', 'Male', 30, 60],
       ['Total (BG002)', 'Female', 55, 120], ['Total (BG002)', 'Male', 65, 120],
     ]);
-    expect(sex.notes.join(' ')).toMatch(/did not match the posted group counts/);
+    // The table shows the confirmed denominator; AACT's own number is not repeated in a note.
+    expect(sex.notes).toEqual([]);
     expect(dataset.studies[0].demographics.race.measures).toHaveLength(2);
   });
 
@@ -207,7 +208,9 @@ describe('end-to-end build from fixture tables', () => {
     // Every posting/category/group cell is distinct, so no value can hide another.
     const cells = age.map((m) => `${m.measureInstance}|${m.categoryLabel}|${m.population}`);
     expect(new Set(cells).size).toBe(cells.length);
-    expect(dataset.studies[0].demographics.age.notes.join(' ')).toMatch(/"Age, Continuous" \(posting 2\) is not available/);
+    expect(dataset.studies[0].demographics.age.notes.join(' ')).toContain(
+      'Some values in "Age, Continuous" (table 2 of 2) were posted as not available. The study\'s explanation: Values are in the other posting.',
+    );
   });
 
   it('does not count a zero from a group with zero participants analyzed as reporting', async () => {
@@ -215,7 +218,7 @@ describe('end-to-end build from fixture tables', () => {
     const ethnicity = dataset.studies[0].demographics.ethnicity;
     expect(ethnicity.status).toBe('not-reported');
     expect(ethnicity.measures).toEqual([]);
-    expect(ethnicity.notes[0]).toMatch(/posted "Ethnicity \(NIH\/OMB\)" but with no values from participants analyzed/);
+    expect(ethnicity.notes[0]).toBe('Posted "Ethnicity (NIH/OMB)" without any values from participants analyzed, so treated as not reported.');
   });
 
   it('flags labeled gender, not-collected race/ethnicity, missing values and count mismatches', async () => {
@@ -223,10 +226,10 @@ describe('end-to-end build from fixture tables', () => {
     const d = dataset.studies[1].demographics;
     expect(d.gender.status).toBe('reported');
     expect(d.sex.status).toBe('not-reported');
-    expect(d.sex.notes).toContain('No measure labeled as sex was reported. See the measure labeled "Gender" under gender.');
+    expect(d.sex.notes).toContain('No measure labeled sex; see the measure labeled "Gender" under Gender.');
     expect(d.gender.notes.join(' ')).toMatch(/add up to 7, not 8/);
     expect(d.race.status).toBe('not-reported');
-    expect(d.race.notes).toContain('The study reported that race and ethnicity were not collected.');
+    expect(d.race.notes).toContain('The study states that race and ethnicity were not collected.');
     expect(report.needsReview).toEqual({ NCT00000007: ['Hair loss score'] });
   });
 
@@ -235,7 +238,7 @@ describe('end-to-end build from fixture tables', () => {
     const d = dataset.studies[1].demographics;
     // "Age, Continuous" was posted with only NA; "Sex/Gender, Customized" likewise.
     expect(d.age).toMatchObject({ status: 'not-reported', measures: [] });
-    expect(d.age.notes).toContain("The study's explanation: Not collected for this group");
+    expect(d.age.notes).toContain("The study's explanation: Not collected for this group.");
     expect(d.sex).toMatchObject({ status: 'not-reported', measures: [] });
     expect(d.sex.notes).toContain("The study's explanation: Sex was not collected for this study.");
     // A posted zero from analyzed participants is still data.
