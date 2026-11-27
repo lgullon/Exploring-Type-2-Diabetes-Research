@@ -38,12 +38,13 @@ This reads an AACT flat-file export, applies the cohort rules, and rewrites `pub
 
 - Browse titles, summaries, conditions, interventions, enrollment, completion dates, and evidence of a U.S. location for every study in the cohort.
 - Search titles, summaries, conditions, and interventions using one reusable candidate-selection rule. Results show 50 at a time.
+- Rank the same search candidates using adjustable relevance, recency, and demographic-reporting priorities; inspect each study's component scores, weighted contributions, reasons, and position change against a relevance-only baseline.
 - Per study, see participant demographics as posted: one table per measure, with categories as rows, study groups and the Total as columns, the confirmed number analyzed, and notes on anything ambiguous.
 - Open original records, inspect citations, and download the dated JSON dataset.
 - See the snapshot date, cohort rules, and limitations.
 - Use a responsive keyboard-accessible interface with explicit loading, load-error/retry, empty-data, and no-results states.
 
-**Search rule (shared).** Search normalizes case, punctuation and accents, then matches **any distinct query token** against the **start of** whole words in the four searchable fields: "metfor" matches "metformin", but "formin" does not. An empty or whitespace-only query shows all studies; punctuation-only queries match nothing. Results use ascending NCT-ID order. There is no weighted ranking or treatment recommendation. Weighted ranking and evaluation must reuse `searchStudies` in `src/search.ts` so they share this candidate rule. (Until 2026-11-20 the rule matched only complete words.)
+**Search rule (shared).** Search normalizes case, punctuation and accents, then matches **any distinct query token** against the **start of** whole words in the four searchable fields: "metfor" matches "metformin", but "formin" does not. An empty or whitespace-only query shows all studies; punctuation-only queries match nothing. Weighted ranking and evaluation reuse `searchStudies` in `src/search.ts`, so they share this candidate rule. For nonempty queries, relevance is the fraction of distinct normalized query tokens that match the start of at least one searchable word. The relevance-only baseline sorts by that score, then ascending NCT ID. For an empty query, relevance is neutral (zero) and the baseline is ascending NCT-ID order. (Until 2026-11-20 the search rule matched only complete words.)
 
 ## Data and extension points
 
@@ -55,6 +56,8 @@ This reads an AACT flat-file export, applies the cohort rules, and rewrites `pub
 | `public/data/sources.json` | Single citation registry with stable IDs |
 | `scripts/data/` | AACT extraction pipeline (`npm run data:build`), its tests, and non-trial citations (`reference-sources.json`) |
 | `src/search.ts` | Shared search normalization and candidate selection |
+| `src/ranking.ts` | Deterministic relevance/recency/reporting scores, weight normalization, explanations, and baseline ranks |
+| `src/ranking.test.ts` | Ranking edge-case and acceptance tests |
 | `src/App.tsx` | Browser, study details, citations, and load states |
 | `src/DemographicTables.tsx` | Per-study demographic tables |
 | `docs/methodology.md` | Snapshot, cohort rules and counts, field mapping, verification, limitations, refresh procedure |
@@ -63,7 +66,17 @@ The dataset is a complete extract of the stated cohort from the AACT snapshot da
 
 Demographics come only from posted baseline characteristics. Every study's age, sex, gender, race and ethnicity fields are `reported` or `not-reported`; none are `not-extracted`. Sex and gender stay separate, and each measure stays under the label the study used. Combined race/ethnicity measures are not split. Arm rows and the Total row are never added together, and no percentages are computed. Denominators are stored only when the posted counts confirm them, because AACT's "number analyzed" values were wrong for most measures in this snapshot; 15% of values have an unknown denominator. A field is `reported` only when at least one posted value describes participants (not only "NA", 0-of-0, or "Unknown or Not Reported" counts); zeros are kept. When a study posts the same measure title more than once, each posting is kept separate (`measureInstance`). Eligibility criteria are not observed demographics. A U.S. site does not mean all participants were U.S.-based. Reporting completeness does not establish research quality, validity, or clinical suitability. Details and counts are in [docs/methodology.md](docs/methodology.md).
 
-**For later stages.** Ranking should reuse `searchStudies` for candidates and may use each demographic field's `status` for reporting completeness (age, sex-or-gender, race, ethnicity); `notes` explain ambiguous cases and should not be treated as missing data. Comparison work can reuse or restyle `DemographicTables.tsx` (group rows by `measureLabel` and `measureInstance`, never by label alone); categories differ between studies and must not be pooled across incompatible labels or denominators. Evaluation should use the same candidate rule as the keyword baseline.
+### Ranking methodology
+
+The ranking is a transparent educational scoring rule, not a validated measure of trial quality, research quality, clinical relevance, or treatment suitability. The default input weights are relevance 0.6, recency 0.2, and demographic-reporting completeness 0.2. Nonnegative input weights are normalized across enabled components. If all enabled weights are zero, the default weights are restored. A study's final score is the sum of its weighted component contributions.
+
+- **Relevance:** fraction of distinct normalized query tokens matched at the start of at least one whole word in title, summary, conditions, or interventions. It follows the shared `searchStudies` token-matching rule. An empty query gives every study relevance 0 and a neutral ID-order baseline.
+- **Recency:** `clamp(1 - ageInYears / 10, 0, 1)`, where age is measured from the dataset's fixed `snapshotDate`, not the current clock. For computation only, a year-only completion date is interpreted as January 1 and a month-only date as the first day of that month; a day-precision date uses the exact day. The original value and precision remain unchanged for display. Missing, invalid, or future completion dates score 0; future dates are explicitly flagged.
+- **Demographic-reporting completeness:** equally weighted presence across four domains: age, sex-or-gender, race, and ethnicity. The sex-or-gender domain is reported if either sex or gender is reported. A domain is not-reported only when both sex and gender are not-reported. If any required domain is still not-extracted anywhere in the dataset, completeness is unavailable and this component is disabled for the entire dataset. A field marked reported counts as reported even when an observed category value is zero; missing is not zero. This component describes reporting only, not quality.
+
+The relevance-only baseline and weighted ranking use identical candidates and NCT-ID ascending tie-breaking. For a nonempty query the baseline orders by relevance score; for an empty query it is neutral ID order, not a relevance finding. Every result exposes raw component scores, normalized weights, weighted contributions, total score, explanatory reasons, and its baseline rank. The fixed scoring choices are informed by literature on relevance ranking and recommender explanations [robertson-2009-probabilistic-relevance; tintarev-masthoff-2015-explaining-recommendations], but the exact custom formula and default weights are the team's design choices, not formulas taken from those sources.
+
+**For later stages.** Comparison work can reuse or restyle `DemographicTables.tsx` (group rows by `measureLabel` and `measureInstance`, never by label alone); categories differ between studies and must not be pooled across incompatible labels or denominators. Evaluation should use the same candidate rule as the keyword baseline.
 
 ## Deployment
 

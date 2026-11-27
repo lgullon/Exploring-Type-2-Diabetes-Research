@@ -1078,3 +1078,223 @@ h1 {
     font-size:.78rem
   }
 }
+
+/* Transparent, user-adjustable ranking */
+.ranking-controls {
+  margin-top: 18px;
+  padding: 25px;
+  background: #eef0e8;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+.ranking-controls-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+.ranking-controls-heading .eyebrow {
+  margin-bottom: 8px;
+}
+.ranking-controls-heading h3 {
+  font: 400 1.55rem/1.2 Georgia, 'Times New Roman', serif;
+  letter-spacing: -.02em;
+  margin: 0 0 7px;
+}
+.ranking-controls-heading p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: .76rem;
+  margin: 0;
+}
+.reset-ranking-button {
+  flex: none;
+  border: 1px solid #9baea2;
+  background: transparent;
+  color: var(--ink);
+  border-radius: 3px;
+  padding: 8px 12px;
+  font-size: .72rem;
+  font-weight: 700;
+}
+.reset-ranking-button:hover {
+  background: #fff;
+}
+.weight-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 25px;
+  margin-top: 24px;
+}
+.weight-control {
+  display: block;
+  min-width: 0;
+}
+.weight-control > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: .77rem;
+}
+.weight-control output {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.weight-control input[type="range"] {
+  display: block;
+  width: 100%;
+  margin: 13px 0 8px;
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+.weight-control input[type="range"]:disabled {
+  cursor: not-allowed;
+  opacity: .4;
+}
+.weight-control small {
+  display: block;
+  color: var(--muted);
+  font-size: .67rem;
+  line-height: 1.55;
+}
+.weight-notice {
+  margin: 17px 0 0;
+  padding: 9px 12px;
+  border-left: 2px solid #b45b22;
+  background: #f7f1e9;
+  font-size: .72rem;
+}
+.weight-method-note {
+  margin: 17px 0 0;
+  color: var(--muted);
+  font-size: .67rem;
+}
+.ranking-breakdown {
+  display: grid;
+  grid-template-columns: 130px minmax(150px, .8fr) 2fr;
+  gap: 18px;
+  align-items: center;
+  padding: 15px 17px;
+  margin: 0 0 21px;
+  background: #edf0e7;
+  border-left: 2px solid #8a9d82;
+}
+.ranking-score {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.ranking-score-label {
+  width: 100%;
+  color: var(--muted);
+  font-size: .59rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.ranking-score strong {
+  font: 400 2rem/1 Georgia, 'Times New Roman', serif;
+  font-variant-numeric: tabular-nums;
+}
+.ranking-score-out-of {
+  color: var(--muted);
+  font-size: .7rem;
+}
+.ranking-position {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: .68rem;
+}
+.ranking-position strong {
+  font-size: .8rem;
+}
+.ranking-position span {
+  color: var(--muted);
+}
+.ranking-components {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+.ranking-components > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ranking-components span {
+  color: var(--muted);
+  font-size: .62rem;
+}
+.ranking-components strong {
+  font-size: .9rem;
+  font-variant-numeric: tabular-nums;
+}
+.ranking-components small {
+  color: var(--muted);
+  font-size: .58rem;
+  line-height: 1.4;
+}
+.ranking-reasons {
+  grid-column: 1 / -1;
+  border-top: 1px solid #d2dbcb;
+  padding-top: 10px;
+  font-size: .69rem;
+}
+.ranking-reasons summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 700;
+}
+.ranking-reasons ul {
+  padding-left: 18px;
+  margin: 10px 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.ranking-reasons .small-note {
+  margin: 8px 0 0;
+}
+@media (max-width: 760px) {
+  .weight-controls {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .ranking-breakdown {
+    grid-template-columns: 1fr 1fr;
+    gap: 13px;
+  }
+  .ranking-components {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 480px) {
+  .ranking-controls-heading {
+    flex-direction: column;
+  }
+  .ranking-breakdown {
+    grid-template-columns: 1fr;
+  }
+  .ranking-components {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.ranking-methodology {
+  margin-top: 15px;
+  padding-top: 11px;
+  border-top: 1px solid #d2dbcb;
+  font-size: .7rem;
+}
+.ranking-methodology summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.ranking-methodology p {
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 9px 0 0;
+}
+.ranking-methodology a {
+  color: var(--teal);
+}
