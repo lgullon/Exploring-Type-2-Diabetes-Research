@@ -26,9 +26,22 @@ function Citations({ ids }: { ids: string[] }) {
 
 const StudyCard = memo(function StudyCard({ study, index, ranking, baselineIsNeutral }: { study: Trial; index: number; ranking: RankingResult; baselineIsNeutral: boolean }) {
   // Details render only once opened, so long lists stay fast.
+  
   const [detailsOpen, setDetailsOpen] = useState(false)
   const summaryWords = study.summary.split(/\s+/)
   const shortSummary = summaryWords.length > 45 ? `${summaryWords.slice(0, 45).join(' ')}…` : study.summary
+
+  const displayedContributions = [
+  ranking.contributions.relevance,
+  ranking.contributions.recency,
+  ranking.contributions.completeness,
+  ]
+    
+  .filter((value): value is number => value !== null)
+  .map(value => Number((value * 100).toFixed(1)))
+
+  const displayedScore = displayedContributions.reduce((sum, value) => sum + value, 0)
+  
   return <article className="study-card" aria-labelledby={`title-${study.nctId}`}>
     <div className="study-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
     <div className="study-body">
@@ -36,14 +49,15 @@ const StudyCard = memo(function StudyCard({ study, index, ranking, baselineIsNeu
       <h3 id={`title-${study.nctId}`}>{study.title}</h3>
       <p className="study-excerpt">{shortSummary}</p>
       <section className="ranking-breakdown" aria-label={`Ranking explanation for ${study.nctId}`}>
-        <div className="ranking-score"><span className="ranking-score-label">Weighted score</span><strong>{(ranking.score * 100).toFixed(1)}</strong><span className="ranking-score-out-of">/ 100</span></div>
+        
+        <div className="ranking-score"><span className="ranking-score-label">Weighted score</span><strong>{displayedScore.toFixed(1)}</strong><span className="ranking-score-out-of">/ 100</span></div>        
         <div className="ranking-position"><strong>Rank #{index + 1}</strong><span>{baselineIsNeutral ? `Neutral ID-order baseline: #${ranking.baselineRank}` : `Relevance-only baseline: #${ranking.baselineRank}`}</span><span>{ranking.baselineRank === index + 1 ? 'No position change' : ranking.baselineRank > index + 1 ? `Moved up ${ranking.baselineRank - index - 1} ${ranking.baselineRank - index - 1 === 1 ? 'place' : 'places'}` : `Moved down ${index + 1 - ranking.baselineRank} ${index + 1 - ranking.baselineRank === 1 ? 'place' : 'places'}`}</span></div>
         <div className="ranking-components">
           <div><span>Relevance</span><strong>{(ranking.components.relevance * 100).toFixed(0)}%</strong><small>{(ranking.contributions.relevance * 100).toFixed(1)} points · {(ranking.normalizedWeights.relevance * 100).toFixed(0)}% weight</small></div>
           <div><span>Recency</span><strong>{(ranking.components.recency * 100).toFixed(0)}%</strong><small>{(ranking.contributions.recency * 100).toFixed(1)} points · {(ranking.normalizedWeights.recency * 100).toFixed(0)}% weight</small></div>
           <div><span>Demographic reporting</span><strong>{ranking.components.completeness === null ? 'Unavailable' : `${(ranking.components.completeness * 100).toFixed(0)}%`}</strong><small>{ranking.contributions.completeness === null ? 'Disabled for this dataset' : `${(ranking.contributions.completeness * 100).toFixed(1)} points · ${(ranking.normalizedWeights.completeness * 100).toFixed(0)}% weight`}</small></div>
         </div>
-        <details className="ranking-reasons"><summary>Why this study received this score</summary><ul><li>{ranking.reasons.relevance}</li><li>{ranking.reasons.recency}</li><li>{ranking.reasons.completeness}</li></ul><p className="small-note">The weighted contributions sum to the displayed score. This is an educational ranking rule, not a validated measure of trial quality.</p></details>
+        <details className="ranking-reasons"><summary>Why this study received this score</summary><ul><li>{ranking.reasons.relevance}</li><li>{ranking.reasons.recency}</li><li>{ranking.reasons.completeness}</li></ul><p className="small-note">The displayed total is the sum of the rounded weighted contributions. Studies are ranked using full-precision scores. This is an educational ranking rule, not a validated measure of trial quality.</p></details>
       </section>
       <dl className="study-facts">
         <div><dt>Study type</dt><dd>Interventional</dd></div>
