@@ -59,6 +59,28 @@
         "International guidelines for systematically reporting sex and gender information in study design, analyses, results and interpretation.",
         "Basis for keeping sex and gender as separate fields and keeping each measure under the label the study used."
       ]
+    },
+    {
+      "id": "robertson-2009-probabilistic-relevance",
+      "author": "Stephen Robertson and Hugo Zaragoza",
+      "title": "The Probabilistic Relevance Framework: BM25 and Beyond",
+      "publicationDate": "2009",
+      "url": "https://doi.org/10.1561/1500000019",
+      "accessedDate": "2026-11-27",
+      "supports": [
+        "Background on relevance-based information retrieval and ranking models; the project uses a simpler, custom keyword baseline rather than BM25."
+      ]
+    },
+    {
+      "id": "tintarev-masthoff-2015-explaining-recommendations",
+      "author": "Nava Tintarev and Judith Masthoff",
+      "title": "Explaining Recommendations: Design and Evaluation",
+      "publicationDate": "2015",
+      "url": "https://doi.org/10.1007/978-1-4899-7637-6_10",
+      "accessedDate": "2026-11-27",
+      "supports": [
+        "Design and evaluation of explanations in recommender systems, including transparency and user understanding."
+      ]
     }
   ]
 }
